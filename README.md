@@ -41,6 +41,7 @@ src/
   visualize.py              equity curve, drawdown, rolling return plots
 notebooks/                scratch/exploration only — final numbers must come from src/ + run_backtest.py
 reports/                   generated outputs (figures, metrics.json) + the written 5-6 page report
+  REPORT_TEMPLATE.md       5-6 page report skeleton: guidelines structure, required metrics table, checklist
 tests/                     unit tests for backtest accounting and metrics (correctness of the engine matters most)
 docs/strategy_notes.md      the actual stock-selection / weighting / rebalancing rules in plain language
 ```

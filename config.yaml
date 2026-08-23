@@ -1,0 +1,34 @@
+# Single source of truth for the backtest. Nothing below should be hardcoded
+# elsewhere in src/ — read it from here so results stay reproducible.
+
+capital:
+  starting_value_inr: 10000000   # ₹1,00,00,000 = ₹1 crore
+
+universe:
+  sources:
+    - data/universe/nifty100.csv
+    - data/universe/midcap100.csv
+    - data/universe/smallcap100.csv
+  max_holdings: 10
+
+dates:
+  backtest_start: "2021-01-01"
+  backtest_end: "2025-12-31"
+  out_of_sample_start: "2026-01-01"
+  out_of_sample_end: "2026-06-30"
+  # extra lookback so factors (e.g. 12-month momentum) are computable from day 1
+  data_start: "2019-06-01"
+
+costs:
+  transaction_cost_pct: 0.001    # 0.1% per transaction, applied on both buys and sells
+
+rebalance:
+  frequency: "M"                # "M" monthly, "Q" quarterly — pick deliberately, see docs/strategy_notes.md
+  weighting_scheme: "score_proportional"   # or "equal_weight", "inverse_vol"
+  max_weight_per_stock: 0.25    # concentration cap, avoid a single name dominating PnL
+
+benchmark:
+  ticker: "^CNX100"             # verify the correct Yahoo Finance symbol before running
+  name: "Nifty 100"
+
+risk_free_rate: 0.0             # per the guidelines, use 0% for Sharpe

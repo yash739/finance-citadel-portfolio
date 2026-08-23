@@ -1,0 +1,3 @@
+ticker,name,sector,index
+# TODO: replace with actual Nifty 100 constituents (Yahoo ticker with .NS suffix)
+# Source: niftyindices.com -> Nifty 100 factsheet -> download constituent CSV

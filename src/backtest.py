@@ -44,6 +44,11 @@ def get_rebalance_dates(index: pd.DatetimeIndex, frequency: str = "M") -> list:
     rebalancing flows.
     """
     freq = (frequency or "M").upper()
+    if freq in ("ONCE", "HOLD", "BUYHOLD"):
+        # Single rebalance on day one, then hold forever - the buy-and-hold control
+        # in the strategy ladder, which isolates how much of the result comes from
+        # rebalancing at all.
+        return [index[0]] if len(index) else []
     if freq in ("M", "MONTHLY"):
         period = "M"
     elif freq in ("Q", "QUARTERLY"):
@@ -81,6 +86,7 @@ def run_backtest(
     volumes=None,
     history: pd.DataFrame = None,
     volume_history: pd.DataFrame = None,
+    score_fn=None,
 ) -> dict:
     """Run the strategy over `prices` and return NAV, trades and diagnostics.
 
@@ -94,6 +100,10 @@ def run_backtest(
         without this the first year of any run would be unscoreable. This is warm-up
         data only - it is never traded on and never contributes to NAV.
     volume_history : matching volume warm-up panel.
+    score_fn : optional scorer with the same contract as factors.score_universe -
+        (prices_up_to_date, volumes_up_to_date, config) -> Series of scores. Defaults
+        to the configured factor composite. This is what lets src/experiments.py swap
+        in a random scorer or a single-factor scorer without touching the engine.
 
     Returns
     -------
@@ -273,7 +283,16 @@ def run_backtest(
         if date in rebalance_dates and i < len(dates) - 1:
             hist_slice = scoring_px.loc[:date]
             vol_slice = scoring_vol.loc[:date]
-            scores = score_universe(hist_slice, vol_slice, config)
+            scorer = score_fn or score_universe
+            scores = scorer(hist_slice, vol_slice, config)
+
+            # A scorer may flag a risk-off regime by setting scores.attrs["risk_off"].
+            # That means "hold nothing", which is different from "I have no opinion":
+            # an empty selection during warm-up must leave the book alone, whereas an
+            # explicit risk-off signal must liquidate into cash.
+            if getattr(scores, "attrs", {}).get("risk_off"):
+                pending_target = pd.Series(dtype=float)
+                continue
             selected = select_stocks(
                 scores,
                 max_holdings=max_holdings,

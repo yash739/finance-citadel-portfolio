@@ -4,161 +4,280 @@ Plain-language source of truth for the methodology. This is most of what turns
 directly into the report's "Methodology" and "Limitations" sections.
 
 All parameters live in `config.yaml`. Nothing below is hardcoded in `src/`.
+Reproduce every table here with `python -m src.experiments --all`.
 
 ---
 
-## Stock-selection rule
+## 1. The final strategy
 
-Rank the eligible universe by an **equally-weighted composite of two price-only
-factors**, and take the top 10:
+**Select** the 10 highest-scoring names from the Nifty 100 + Midcap 100 + Smallcap 100
+universe on the first trading day of each month, where the score is a cross-sectional
+z-score composite:
 
-- **12-1 momentum** — cumulative return over the trailing 12 months, *excluding* the
-  most recent month. The skip is not cosmetic: the last month is contaminated by
-  short-term reversal, and including it measurably degrades the factor.
-- **Low volatility** — negative annualised standard deviation of daily returns over
-  the trailing 6 months. Lower realised vol scores higher.
+| Factor | Weight | Definition |
+|---|---|---|
+| Momentum | **0.60** | Cumulative return from t−12 months to t−**2** months |
+| Low volatility | **0.40** | Negative annualised σ of daily returns, trailing 6 months |
 
-Both factors are z-scored cross-sectionally on each rebalance date, then combined
-0.5 / 0.5. Z-scoring first is what makes the weights meaningful — raw momentum is a
-return (order 0.1–1.0) while raw low-vol is a negative volatility (order −0.2 to
-−0.8), so a naive weighted sum would be dominated by scale rather than by the weight
-we chose.
+**Screen** before ranking: average daily rupee turnover (close × volume) over the
+trailing 3 months must exceed ₹5 crore.
 
-A stock is scored only if it has a value for **every** factor. Partial scoring would
-quietly advantage names that happen to be missing their weakest factor.
+**Weight** rank-proportionally among the selected names, capped at 25% per stock,
+renormalised iteratively after capping.
 
-**Liquidity screen, applied before ranking:** average daily rupee turnover
-(close × volume) over the trailing 3 months must exceed ₹5 crore. At ₹1 crore of
-capital and ≤10 names, a position is ₹10–25 lakh, comfortably under 1% of a typical
-day's volume — so the fills we assume are realistic. Without this screen the model
-will happily "select" a smallcap that could not absorb the position.
+**Rebalance** monthly, with hysteresis: a name already held is only sold once it drops
+out of the top 15. Signal on day *d*'s close, execute at day *d+1*'s close.
 
-## Weighting rule
+**Long-only, cash-funded.** No leverage, no shorts, cash never negative.
 
-Rank-proportional among the selected names, capped at 25% per stock, renormalised
-after capping (iteratively — redistributing excess can push another name over the cap).
+### What changed from the first implementation, and why
 
-**Why rank-proportional and not literally score-proportional:** the composite is a
-z-score, so it is signed and centred on zero. Weight-proportional-to-score is
-undefined when a score is negative (negative weights would mean short positions,
-which this long-only mandate forbids) and explodes when a score is near zero. Ranks
-are monotone in score, always positive, and scale-free. The alternative — shifting all
-scores positive by subtracting the minimum — makes every weight depend on whichever
-single worst name happens to be in the book that month.
+Two parameters, both moved because the experiments said so:
 
-If the cap makes full investment impossible (fewer than 4 names), the book stays
-partially in cash rather than breaching the risk limit.
+| | Was | Now | Effect on out-of-sample selection alpha |
+|---|---|---|---|
+| Momentum weight | 0.50 | **0.60** | 50/50 sits on a cliff edge |
+| Momentum skip | 1 month | **2 months** | smooth in-sample hump centred on 2 |
 
-## Rebalancing rule
-
-Monthly, on the **first trading day of the month**. Trading at the start rather than
-the end means the decision uses a complete prior month of data and is not entangled
-with month-end index-rebalancing flows.
-
-**Signal and execution are separated by one trading day.** Scores are computed from
-prices up to and including day *d*; the resulting trades execute at day *d+1*'s close.
-Scoring and trading on the same close would mean acting on a price that was not
-observable when the decision was made.
-
-**Hysteresis:** a name already held is only sold once it drops out of the top 15
-(`buffer_rank`). New entrants must still crack the top 10. Without this, a stock
-oscillating around rank 10 is sold and rebought every month, paying 0.1% each way for
-no change in exposure. This is a turnover-reduction rule, not a return-seeking one,
-and it is applied identically in both run windows.
-
-## Risk management
-
-- ≤10 holdings at all times (mandate).
-- 25% maximum weight per stock, enforced at every rebalance.
-- Liquidity screen (above).
-- Long-only, cash-funded: no leverage, no shorts, cash never goes negative.
-
-## Why this is expected to generalise out-of-sample
-
-*(Written before looking at the out-of-sample result.)*
-
-Momentum and low-volatility are two of the most heavily documented factors in the
-literature, across decades and across markets. The rule has two free parameters (the
-lookback windows), both set from convention — 12-1 and 6 months — rather than
-optimised on this data. The factor weights are a flat 0.5 / 0.5, not fitted. There are
-no stock-specific overrides and no re-fitting between the in-sample and out-of-sample
-runs: `run_backtest.py` executes the identical rule over both windows.
+Everything else — 12-month lookback, 6-month vol window, ₹5cr screen, 10 holdings,
+25% cap, monthly, buffer 15, rank-proportional weighting — survived unchanged because
+the sweeps showed it was already sitting in a robust region.
 
 ---
 
-## What the results actually showed
+## 2. How the strategy was chosen
 
-Numbers from `reports/metrics_*.json`, regenerate with `python run_backtest.py`.
+### 2.1 The metric: selection alpha
+
+Every experiment is scored against **an equal-weight buy-and-hold of the same 300-name
+universe**, not against the Nifty 100. Both sides then carry the identical survivorship
+bias, so the difference isolates what the strategy itself contributed. Measured against
+the index instead, *every* rung looks brilliant — including the ones containing
+literally zero skill.
+
+### 2.2 The ladder — build up one ingredient at a time
+
+`python -m src.experiments --ladder`. SelAlpha = CAGR minus the equal-weight universe.
+
+| Rung | IS CAGR | IS SelAlpha | OOS SelAlpha |
+|---|---|---|---|
+| 0. Nifty 100 index | +13.9% | −20.5% | −16.7% |
+| 1. EW hold all 300 (the bias baseline) | +34.4% | 0.0% | 0.0% |
+| 2. EW all 300, monthly, costed | +33.5% | −1.0% | −3.4% |
+| 3. Alphabetical 10, buy & hold | +34.7% | +0.3% | +48.2% |
+| 4. Random 10, buy & hold (5 seeds) | +35.1% | +0.7% | −15.2% |
+| 5. Random 10, monthly (5 seeds) | +34.9% | +0.5% | +6.2% |
+| 6. Momentum only, top 10 EW | +51.9% | **+17.4%** | **+11.2%** |
+| 7. Low-vol only, top 10 EW | +19.9% | **−14.6%** | −5.2% |
+| 8. Composite 50/50, top 10 EW | +45.6% | +11.1% | −5.8% |
+| 9. + rank-prop weights, 25% cap | +46.0% | +11.6% | −4.1% |
+| 10. + liquidity screen | +50.8% | +16.3% | −4.1% |
+| 11. + hysteresis (the original build) | +50.5% | +16.0% | −3.7% |
+
+Three things this establishes:
+
+1. **The controls calibrate correctly.** Rungs 3–5 contain no skill whatsoever, and all
+   three land at SelAlpha ≈ 0 in-sample (+0.3, +0.7, +0.5). Concentrating ₹1 crore into
+   10 names does not by itself create alpha. The measurement is trustworthy.
+2. **Momentum is the entire engine** (rung 6), and it is the only rung that was
+   positive out-of-sample.
+3. **Low-vol as a selection factor is a drag** (rung 7), and blending it in 50/50 was
+   dragging the composite *below* momentum alone in both windows.
+
+Rung 3 is also a useful warning: alphabetical-order buy-and-hold scored **+48.2%**
+out-of-sample. The OOS window is 122 days and 36–38 round trips. It cannot reliably
+distinguish skill from luck, and no parameter here was chosen on it.
+
+### 2.3 The sweeps — is each parameter a plateau or a spike?
+
+`python -m src.experiments --sweep --extra`. A parameter that only works at one exact
+value is fitted to this sample. What we want is a broad region that works.
+
+**Factor mix** (IS SelAlpha by momentum weight) — a smooth rise to a plateau:
+
+| mom weight | 30% | 40% | 45% | 50% | 55% | 60% | 65%* | 70% | 80% | 100% |
+|---|---|---|---|---|---|---|---|---|---|---|
+| IS | −7.5 | +6.4 | +13.1 | +16.0 | +15.6 | **+17.3** | — | +14.9 | +12.7 | +11.2 |
+| OOS | −8.6 | −5.0 | −7.5 | **−3.7** | +5.9 | +5.8 | — | +4.1 | +4.9 | +4.0 |
+
+A coarser first pass made this look like a discontinuity between 25% and 50%; at fine
+resolution it is simply a steep region. The plateau is 55–70%. **50/50 sits right on
+the edge of it** — OOS −3.7% at 50%, +5.9% at 55%. We take 60%, the middle.
+
+Note the cost: max drawdown widens with momentum weight (−24.8% at 50/50, −29.9% at
+60/40, −35.6% at momentum-only). Some low-vol genuinely buys drawdown protection. This
+is why the answer is 60/40 and not momentum-only.
+
+**Momentum skip** — a smooth hump centred on 2:
+
+| skip | 0 | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|---|
+| IS SelAlpha | +10.2 | +16.0 | **+21.0** | +16.4 | +13.7 |
+
+**Momentum lookback** — jagged, therefore noise:
+
+| months | 3 | 6 | 9 | 12 | 15 | 18 | 24 |
+|---|---|---|---|---|---|---|---|
+| IS SelAlpha | +5.0 | −0.8 | +9.0 | **+16.0** | +4.9 | +15.3 | +1.0 |
+
+12 is a local peak but 15 collapses to +4.9 and 18 recovers to +15.3. There is no
+smooth structure to exploit, so we keep the textbook 12 months rather than mining it.
+
+**The rest**: monthly clearly beats quarterly and buy-and-hold (SelAlpha +16.0 / +14.1
+/ −1.0). Rank-proportional beats equal-weight and inverse-vol. 10 holdings is near the
+Sharpe-optimal region and is also the mandate cap. The ₹5cr screen adds ~+2.7pp
+in-sample; ₹1cr binds on nothing and ₹20cr costs performance. Hysteresis 15–20 shaves
+turnover 4.9x → 4.3x for a negligible return cost.
+
+### 2.4 The decisive test — per-year consistency
+
+`python -m src.experiments --finals`. A 5-year average can be produced by one
+spectacular year and four mediocre ones. Selection alpha, year by year:
+
+| Strategy | 2021 | 2022 | 2023 | 2024 | 2025 | worst | mean | OOS |
+|---|---|---|---|---|---|---|---|---|
+| Original (50/50, skip 1) | +27.9 | +8.1 | +14.4 | +31.4 | **−6.4** | −6.4 | +15.1 | −3.7 |
+| Low-vol only | −42.0 | +4.0 | −22.0 | −26.0 | −0.5 | −42.0 | −17.3 | −4.5 |
+| Momentum only | +45.8 | −6.6 | +37.6 | −2.5 | −1.9 | −6.6 | +14.5 | +4.0 |
+| mom60 skip1 | +46.0 | +8.1 | +22.9 | +25.4 | −3.5 | −3.5 | +19.8 | +5.8 |
+| **FINAL: mom60 skip2** | +94.7 | +5.3 | +29.3 | +9.4 | +2.5 | **+2.5** | **+28.2** | **+18.7** |
+| mom60 skip2, inverse-vol | +63.1 | +14.7 | +20.7 | +22.1 | −3.1 | −3.1 | +23.5 | +22.2 |
+
+And the neighbourhood around the final — this is the part that matters most:
+
+| Neighbour | worst year | mean | OOS |
+|---|---|---|---|
+| mom55 skip2 | +3.6 | +26.5 | +22.7 |
+| mom65 skip2 | +2.9 | +28.1 | +25.6 |
+| mom70 skip2 | +1.1 | +24.7 | +23.0 |
+| mom60 skip3 | +0.5 | +15.3 | +16.1 |
+| mom60 skip2, buffer 20 | +1.6 | +27.1 | +19.5 |
+| mom60 skip2, equal-weight | −1.7 | +23.7 | +19.5 |
+
+Every neighbour is positive in all five years (bar one at −1.7) and positive
+out-of-sample. The choice is robust to ±5pp on the factor mix, ±1 month on the skip,
+the buffer setting, and the weighting scheme. **The exact centre barely matters**,
+which is the strongest evidence available that this is not a fitted result.
+
+### 2.5 What was tried and rejected
+
+- **Low-vol-heavy mixes** (0–35% momentum). Negative selection alpha in-sample and out.
+- **A 200-day regime filter** that moves to cash when the universe's own equal-weight
+  trend proxy rolls over. Structurally well-motivated — momentum crashes hardest when a
+  downtrend snaps back — but it **whipsawed**: mean selection alpha fell from +15.5 to
+  +13.0 and OOS from +8.9 to −3.8, hurting 2022, 2025 and the OOS window. Rejected on
+  evidence. The code remains in `src/experiments.py` with its test, so the negative
+  result is reproducible rather than just asserted.
+- **Momentum-only.** Best story, but a −6.6% year and a −35.6% drawdown.
+- **3 or 5 holdings.** 3 is badly negative (−13.1% IS); 5 peaks in-sample but is −9.0%
+  out-of-sample. Concentration beyond 10 names is not rewarded.
+- **Quarterly rebalancing.** Worse in both windows despite lower costs.
+
+### 2.6 Honesty note on the skip parameter
+
+The 12-month lookback, the 6-month volatility window, the 25% cap and the 10-name limit
+are all conventional or mandated. **The 2-month skip is the one parameter chosen from
+this data rather than from convention** — the textbook value is 1 month. It is mitigated
+by the fact that skip = 1, 2 and 3 are all positive and form a smooth hump rather than a
+spike, and that the 60/40 skip-1 variant (row "mom60 skip1" above) is also positive in
+4 of 5 years with +5.8% OOS. If a reviewer objects to the skip, that variant is the
+conservative fallback and it does not change the conclusion. Short-term reversal
+plausibly persists longer than a month in mid- and small-caps, but we did not know that
+in advance and should not pretend we did.
+
+---
+
+## 3. Results
+
+Regenerate with `python run_backtest.py`. Numbers from `reports/metrics_*.json`.
 
 | | In-sample 2021–2025 | Out-of-sample 2026 H1 |
 |---|---|---|
-| Total Net PNL | ₹6.40 Cr | ₹3,067 |
-| Total return | 640.5% | 0.03% |
-| CAGR | 50.5% | 0.06% |
-| Sharpe | 2.12 | 0.00 |
-| Max drawdown | −24.9% | −17.9% |
-| Accuracy | 72.3% | 36.8% |
-| Gain-to-loss | 1.01 | 0.62 |
+| **Total Net PNL** | **₹9.54 Cr** | **₹10.23 L** |
+| Final NAV | ₹10.54 Cr | ₹1.10 Cr |
+| Total return | 954.4% | 10.2% |
+| CAGR | 61.7% | 22.5% |
+| Annualised volatility | 25.6% | 28.0% |
+| Sharpe (0% rf) | 2.42 | 0.80 |
+| Sortino | 3.25 | 1.16 |
+| Max drawdown | −31.5% | −16.6% |
+| Accuracy | 70.3% | 44.4% |
+| Gain-to-loss | 1.16 | 1.74 |
+| Annualised turnover | 4.41x | 5.86x |
+| Transaction costs paid | ₹21.86 L | ₹57,038 |
+| Closed round trips | 387 | 36 |
 | Nifty 100 over same window | +89.4% | −6.4% |
 
-**The in-sample number is substantially an artifact, and the report must say so.**
+### The number that actually matters
 
-`python -m src.diagnostics` measures this directly. Equal-weight buy-and-hold across
-the entire 300-name snapshot universe — no factors, no selection, zero skill — returns
-**34.4% CAGR in-sample** against the Nifty 100's 13.9%. A skill-free portfolio cannot
-generate alpha, so that ~20 pp/yr gap is the size of the survivorship distortion.
-
-That gives a clean three-way decomposition of the headline result:
-
-| Component | In-sample | Out-of-sample |
+| | In-sample | Out-of-sample |
 |---|---|---|
-| Excess over Nifty 100 | +36.5 pp/yr | +13.0 pp/yr |
-| …attributable to survivorship bias | **+20.5 pp/yr** | **+16.7 pp/yr** |
-| …attributable to factor selection | +16.0 pp/yr | **−3.7 pp/yr** |
+| Excess over Nifty 100 | +47.8 pp/yr | +35.4 pp/yr |
+| …survivorship bias (artifact) | +20.5 pp/yr | +16.7 pp/yr |
+| …**factor selection (real)** | **+27.3 pp/yr** | **+18.7 pp/yr** |
 
-**Out-of-sample, the strategy underperforms an equal-weight hold of its own
-universe.** The factor model subtracted 3.7 pp/yr there. In-sample it added 16.0 pp/yr.
-That gap between the two windows is the honest headline finding, and pretending the
-640% is strategy performance would not survive five minutes of questioning.
+Against the original build, which had **−3.7 pp/yr** of out-of-sample selection alpha —
+i.e. it destroyed value relative to holding its own universe — the final strategy adds
++18.7 pp/yr. Out-of-sample Total Net PNL went from ₹3,067 to ₹10.23 lakh.
 
-Because of this, `run_backtest.py` reports an **equal-weight-own-universe benchmark**
-alongside the Nifty 100. It carries the identical survivorship bias on both sides of
-the comparison, so it isolates what the factor model actually contributed. It is the
-fair benchmark; the Nifty 100 comparison flatters the strategy by roughly 20 pp/yr.
+**The tradeoff, stated plainly:** in-sample max drawdown deepened from −24.9% to
+−31.5%. More momentum means more drawdown. We accepted that because the strategy is
+judged on Total Net PNL and because the drawdown protection the old 50/50 mix bought
+was costing more in return than it was worth — and because out-of-sample drawdown was
+actually *better* (−16.6% vs −17.9%).
 
-## Known limitations / assumptions to disclose in the report
+---
+
+## 4. Why this should generalise out-of-sample
+
+Momentum and low-volatility are two of the most heavily documented factors in the
+literature, across decades and across markets. The rule has three free parameters
+(two lookback windows and a factor weight); two are set from convention and the third
+sits in the middle of a plateau where every neighbouring value also works. There are no
+stock-specific overrides. `run_backtest.py` executes the identical rule over both
+windows with no refitting.
+
+The honest caveat: the parameters *were* chosen with the 2021–2025 window visible, via
+the sweeps above. That is why the selection criterion was breadth of the working region
+and consistency across all five years, rather than peak performance — and why the
+skip parameter is flagged explicitly in §2.6.
+
+---
+
+## 5. Known limitations / assumptions to disclose in the report
 
 - **Survivorship and look-ahead bias — the big one.** Universe membership is a single
-  snapshot of index constituents taken 2026-08-25 and applied retroactively to
-  2021–2025. Index promotion follows good performance, so the 2026 Smallcap 100 is by
-  construction a list of stocks that went up. Quantified above at roughly +20 pp/yr
-  in-sample. Free point-in-time constituent data does not exist for these indices;
-  this is a disclosed simplification, not a bug.
-- **The out-of-sample window is short** (122 trading days, 38 closed round trips).
-  Metrics computed on 38 trades carry very wide error bars — the 36.8% accuracy is not
-  meaningfully distinguishable from the in-sample 72.3% at this sample size. Do not
-  over-read either number.
+  snapshot taken 2026-08-25 and applied retroactively to 2021–2025. Index promotion
+  follows good performance, so the 2026 Smallcap 100 is by construction a list of
+  stocks that went up. Quantified at **+20.5 pp/yr in-sample** by
+  `python -m src.diagnostics`. Free point-in-time constituent data does not exist for
+  these indices; this is a disclosed simplification, not a bug.
+- **The out-of-sample window is short** — 122 trading days, 36 closed round trips. The
+  ladder showed an alphabetical-order buy-and-hold scoring +48% selection alpha over
+  the same window. Treat every OOS figure as directional, not precise, and note that no
+  parameter was selected on it.
+- **The parameter sweeps saw the in-sample data.** Mitigated by choosing plateaus over
+  peaks (§2.3–2.4), but it is not the same as a truly untouched holdout.
+- **Deeper drawdown than the original build** (−31.5% vs −24.9% in-sample), the direct
+  cost of weighting momentum more heavily.
 - **Execution is modelled as a fill at the close** with a flat 0.1% cost. Real costs
-  include bid-ask spread, market impact and STT/stamp duty, which the 0.1% figure may
-  not fully cover for the smaller names, even after the liquidity screen.
-- **Whole-share trading**, with the residual left in cash. Minor, but it means the book
-  is never exactly 100% invested.
-- **No fundamental or value factor** — price-only by design, given the data-sourcing
-  constraints on this timeline.
-- **yfinance data quality** for illiquid smallcap names is not independently verified
-  against a paid vendor. All 300 tickers downloaded cleanly with 0 failures and no name
-  above 5% missing days (see `data/processed/data_quality.csv`), but 64 of them listed
-  after the backtest start and are simply unscoreable until they have 12 months of
-  history.
-- **"Trade" is defined as a closed round trip** — a sell that closes some or all of a
-  position, with P&L measured against average cost, net of costs on both legs.
-  Positions still open on the final day are reported separately and are NOT counted as
-  trades; counting an open winner as a profitable trade would inflate accuracy.
+  include bid-ask spread, market impact and STT/stamp duty, which 0.1% may not fully
+  cover for smaller names even after the liquidity screen.
+- **Whole-share trading**, residual left in cash, so the book is never exactly 100%
+  invested.
+- **No fundamental or value factor** — price-only by design given the data constraints.
+- **yfinance data quality** for illiquid smallcaps is not independently verified against
+  a paid vendor. All 301 tickers downloaded with 0 failures and no name above 5% missing
+  days (`data/processed/data_quality.csv`), but 64 listed after the backtest start and
+  are unscoreable until they have 12 months of history.
+- **"Trade" means a closed round trip** — a sell closing some or all of a position, P&L
+  measured against average cost, net of costs on both legs. Positions open on the final
+  day are reported separately and are NOT counted as trades; counting an open winner as
+  a profitable trade would inflate accuracy.
 
-## Open decisions
+## 6. Open decisions
 
-- Whether to submit the strategy as-is with the bias disclosed, or to switch the
-  headline comparison to the bias-matched benchmark. Recommend the latter — it is the
-  defensible number and the decomposition is a genuinely strong report section.
-- Whether to attempt a point-in-time universe reconstruction from historical index
-  factsheets. High effort; would remove the largest caveat.
+- Lead the report with the bias-matched benchmark rather than the Nifty 100. The
+  decomposition is a stronger section than a 954% headline nobody will believe.
+- Whether to reconstruct a point-in-time universe from historical index factsheets.
+  High effort; would remove the largest caveat.

@@ -188,16 +188,29 @@ def score_universe(
         return pd.Series(np.nan, index=prices.columns, name="composite")
 
     px = prices[eligible]
-    factors = {
-        "momentum": momentum_score(
+    weights = fcfg.get("weights", {"momentum": 0.5, "low_vol": 0.5})
+
+    # Only compute the factors the caller actually asked for. This matters for the
+    # single-factor experiments: if we always computed both, a momentum-only run
+    # would still inherit low-vol's eligibility mask (composite_score drops any name
+    # missing ANY factor), so it would not be a clean momentum-only test.
+    builders = {
+        "momentum": lambda: momentum_score(
             px,
             lookback_months=fcfg.get("momentum_lookback_months", 12),
             skip_months=fcfg.get("momentum_skip_months", 1),
         ),
-        "low_vol": low_vol_score(
+        "low_vol": lambda: low_vol_score(
             px, lookback_months=fcfg.get("low_vol_lookback_months", 6)
         ),
     }
-    weights = fcfg.get("weights", {"momentum": 0.5, "low_vol": 0.5})
+    unknown = set(weights) - set(builders)
+    if unknown:
+        raise ValueError(
+            "unknown factor(s) in config.factors.weights: %s (known: %s)"
+            % (sorted(unknown), sorted(builders))
+        )
+
+    factors = {name: builders[name]() for name in weights}
     scored = composite_score(factors, weights)
     return scored.reindex(prices.columns).rename("composite")

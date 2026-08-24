@@ -23,6 +23,9 @@ python run_backtest.py --config config.yaml
 
 # 4. Sanity-check the result: how much of it is survivorship bias vs strategy?
 python -m src.diagnostics
+
+# 5. Reproduce the strategy-selection evidence (ladder, sweeps, per-year robustness)
+python -m src.experiments --all
 ```
 
 Environment: a conda env in WSL (`conda create -n citadel -c conda-forge python=3.11
@@ -48,6 +51,7 @@ src/
   benchmark.py              Nifty 100 / 500 comparison series
   visualize.py              equity curve, drawdown, rolling return plots
   diagnostics.py            survivorship-bias decomposition: how much of the result is real
+  experiments.py            strategy ladder + parameter sweeps: how the strategy was chosen
 notebooks/                scratch/exploration only — final numbers must come from src/ + run_backtest.py
 reports/                   generated outputs (figures, metrics.json) + the written 5-6 page report
   REPORT_TEMPLATE.md       5-6 page report skeleton: guidelines structure, required metrics table, checklist
@@ -83,6 +87,6 @@ are in.
 - [ ] `reports/metrics.json` contains every metric required by the guidelines
 - [ ] Benchmark comparison included and plotted
 - [ ] Out-of-sample run (Jan–Jun 2026) uses the exact same trained rule, no refitting
-- [ ] `pytest tests/ -q` passes (88 tests, incl. a no-look-ahead invariance check)
+- [ ] `pytest tests/ -q` passes (103 tests, incl. a no-look-ahead invariance check)
 - [ ] Survivorship bias quantified and disclosed, not just mentioned - see
       `python -m src.diagnostics` and docs/strategy_notes.md

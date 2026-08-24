@@ -10,8 +10,8 @@ with a 1 Jan 2026 – 30 Jun 2026 out-of-sample stress test.
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-# 1. Build/refresh the investable universe list
-python -m src.universe
+# 1. Refresh the investable universe from niftyindices.com (a snapshot is committed)
+python -m src.universe --refresh
 
 # 2. Download price data for the universe (writes to data/raw/)
 python -m src.data_loader
@@ -19,8 +19,16 @@ python -m src.data_loader
 # 3. Run the full backtest (config.yaml controls dates, capital, costs, weighting)
 python run_backtest.py --config config.yaml
 
-# Outputs land in reports/: equity_curve.png, drawdown.png, metrics.json, trades.csv
+# Outputs land in reports/: figures/, metrics_*.json, trades_*.csv, round_trips_*.csv
+
+# 4. Sanity-check the result: how much of it is survivorship bias vs strategy?
+python -m src.diagnostics
 ```
+
+Environment: a conda env in WSL (`conda create -n citadel -c conda-forge python=3.11
+pandas numpy pyyaml matplotlib scipy pytest pyarrow && pip install yfinance tqdm`).
+All git remote operations run through WSL - port 22 is blocked on this network, so
+`~/.ssh/config` routes github.com over port 443.
 
 ## Repo layout
 
@@ -39,6 +47,7 @@ src/
   metrics.py               Sharpe, MDD, annualised return, gain-to-loss, accuracy, turnover
   benchmark.py              Nifty 100 / 500 comparison series
   visualize.py              equity curve, drawdown, rolling return plots
+  diagnostics.py            survivorship-bias decomposition: how much of the result is real
 notebooks/                scratch/exploration only — final numbers must come from src/ + run_backtest.py
 reports/                   generated outputs (figures, metrics.json) + the written 5-6 page report
   REPORT_TEMPLATE.md       5-6 page report skeleton: guidelines structure, required metrics table, checklist
@@ -74,3 +83,6 @@ are in.
 - [ ] `reports/metrics.json` contains every metric required by the guidelines
 - [ ] Benchmark comparison included and plotted
 - [ ] Out-of-sample run (Jan–Jun 2026) uses the exact same trained rule, no refitting
+- [ ] `pytest tests/ -q` passes (88 tests, incl. a no-look-ahead invariance check)
+- [ ] Survivorship bias quantified and disclosed, not just mentioned - see
+      `python -m src.diagnostics` and docs/strategy_notes.md

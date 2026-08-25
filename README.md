@@ -29,6 +29,10 @@ python -m src.experiments --all
 
 # 6. Check the edge is not an artifact of the current index snapshot
 python -m src.pit_universe
+
+# 7. Head-to-head against alternative signal families (reversal, trend, residual
+#    momentum, low beta, illiquidity, sector-neutral, ensembles)
+python -m src.alt_strategies
 ```
 
 Environment: a conda env in WSL (`conda create -n citadel -c conda-forge python=3.11
@@ -57,6 +61,7 @@ src/
   diagnostics.py            survivorship-bias decomposition: how much of the result is real
   experiments.py            strategy ladder + parameter sweeps: how the strategy was chosen
   pit_universe.py           2023 point-in-time universe test: is the edge snapshot-dependent?
+  alt_strategies.py         14 alternative signal families + sector-neutral and ensemble wrappers
 notebooks/                scratch/exploration only — final numbers must come from src/ + run_backtest.py
 reports/                   generated outputs (figures, metrics.json) + the written report
   report.html              the written report: findings, ladder, sweeps, results (self-contained)

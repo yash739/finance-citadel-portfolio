@@ -290,6 +290,82 @@ skip parameter is flagged explicitly in §2.6.
 
 ---
 
+## 6b. Alternative signal families — the search that found nothing better
+
+`python -m src.alt_strategies`. Everything in §2 explores *one* idea: rank the universe
+cross-sectionally on momentum and volatility. Sweeping its parameters tells you where
+that idea works best, not whether a different idea works better. This section holds the
+harness fixed — same engine, costs, 10-name cap and eligibility gate — and swaps the
+signal itself.
+
+Selection alpha per year, worst year and mean, plus the held-out window:
+
+| Signal family | worst | mean | OOS |
+|---|---|---|---|
+| **SHIPPED — mom60/lowvol40 skip2** | **+2.5** | **+28.2** | **+18.7** |
+| illiquidity (Amihud) | −11.8 | +52.8 | −9.7 |
+| ensemble: shipped + residual momentum | +3.8 | +30.8 | +19.9 |
+| residual momentum (beta stripped out) | −3.5 | +28.0 | +3.7 |
+| sector-neutral shipped | −1.7 | +17.5 | +35.2 |
+| sector-neutral residual momentum | −13.7 | +25.1 | +25.1 |
+| acceleration (6m vs prior 6m) | −14.7 | +11.1 | −33.4 |
+| trend (100d MA distance) | −29.6 | +3.4 | +27.2 |
+| return consistency | −24.5 | +1.4 | −18.1 |
+| reversal (3m loser) | −30.7 | +3.2 | +47.4 |
+| trend (200d MA distance) | −42.0 | −0.4 | +0.9 |
+| reversal (1m loser) | −24.3 | −10.5 | +16.9 |
+| 52-week high proximity | −25.9 | −15.4 | +13.7 |
+| low beta | −52.6 | −25.4 | −22.2 |
+
+### What this establishes
+
+**Momentum's direction is right.** Reversal — the literal opposite — is negative at both
+1-month (−10.5 mean) and 3-month horizons. If our momentum result were a sign error or a
+sample artifact, this is where it would show.
+
+**Momentum is not disguised market beta.** Residual momentum, which strips out the
+market component, scores +28.0 mean — essentially matching raw momentum. The edge is
+stock-specific, not leveraged index exposure.
+
+**Low beta confirms the low-vol finding independently.** −25.4 mean, worst year −52.6.
+Two different constructions of "prefer calm stocks" both fail badly as *selection*
+signals, which is why the final strategy keeps low-vol at only 40% and uses it for
+tempering rather than picking.
+
+**Nothing beat the incumbent.** The two that came close both fail on inspection:
+
+- **Illiquidity (Amihud)** posts the highest mean by far (+52.8) but has a losing year
+  and is negative out-of-sample. Worth noting what *doesn't* disqualify it: at ₹10 lakh
+  positions its book is only 0.80% of median daily volume (worst case 1.29%), versus
+  0.12% for the shipped book. It is genuinely tradeable at this size — it simply fails
+  the robustness bar, and it is in direct tension with the liquidity screen that §2.3
+  showed helps.
+- **The residual-momentum ensemble** is robust — every blend weight from 0.30 to 0.70 is
+  positive in all five years and out-of-sample — but it is not an *improvement*. Worst
+  year and OOS alpha **fall** as blend weight rises while mean **rises**, and the mean is
+  dominated by 2021 (which swings from +66% to +109% across weights). Two criteria
+  pointing opposite directions, one driven by a single outlier year, is noise. The
+  full-period run confirms it: the blend gives up in-sample (₹8.89 Cr vs ₹9.54 Cr,
+  selection alpha +25.2 vs +27.3) to gain marginally out-of-sample (₹10.51 L vs
+  ₹10.23 L). A wash, at the cost of extra complexity.
+
+**Sector-neutrality is the one genuinely open question.** It posts the best single
+out-of-sample number in the whole project (+35.2) but has a negative year and a much
+lower mean. It is a risk-control argument more than a return argument — it prevents the
+book becoming an accidental industry bet — and would be the first thing to revisit given
+more held-out data.
+
+### A caveat on this whole table
+
+Nineteen candidates were tested. With that many comparisons, one edging past the
+incumbent by a small margin is *expected by chance* — which is exactly why the ensemble
+was put through a neighbourhood test and a full-period run before being rejected rather
+than adopted on its headline number. The value of this section is the negative result:
+the shipped strategy survived a broad search across genuinely different signal families,
+which is evidence it is not an arbitrary local choice.
+
+---
+
 ## 7. Appendix — does the edge survive a 2023 universe?
 
 `python -m src.pit_universe`. The claim this whole analysis rests on is that selection

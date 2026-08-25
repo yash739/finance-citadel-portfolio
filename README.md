@@ -26,6 +26,9 @@ python -m src.diagnostics
 
 # 5. Reproduce the strategy-selection evidence (ladder, sweeps, per-year robustness)
 python -m src.experiments --all
+
+# 6. Check the edge is not an artifact of the current index snapshot
+python -m src.pit_universe
 ```
 
 Environment: a conda env in WSL (`conda create -n citadel -c conda-forge python=3.11
@@ -39,6 +42,7 @@ All git remote operations run through WSL - port 22 is blocked on this network, 
 config.yaml            single source of truth: dates, capital, txn cost, rebalance freq
 data/
   universe/             static CSVs: nifty100.csv, midcap100.csv, smallcap100.csv (ticker, name, sector)
+  universe_2023/        the same three lists as they stood in Aug 2023 (Internet Archive)
   raw/                  downloaded OHLCV, gitignored — regenerate via src/data_loader.py
   processed/            cleaned/adjusted panels used by the backtest
 src/
@@ -52,6 +56,7 @@ src/
   visualize.py              equity curve, drawdown, rolling return plots
   diagnostics.py            survivorship-bias decomposition: how much of the result is real
   experiments.py            strategy ladder + parameter sweeps: how the strategy was chosen
+  pit_universe.py           2023 point-in-time universe test: is the edge snapshot-dependent?
 notebooks/                scratch/exploration only — final numbers must come from src/ + run_backtest.py
 reports/                   generated outputs (figures, metrics.json) + the written report
   report.html              the written report: findings, ladder, sweeps, results (self-contained)

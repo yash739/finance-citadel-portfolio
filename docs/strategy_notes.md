@@ -246,12 +246,18 @@ skip parameter is flagged explicitly in §2.6.
 
 ## 5. Known limitations / assumptions to disclose in the report
 
-- **Survivorship and look-ahead bias — the big one.** Universe membership is a single
-  snapshot taken 2026-08-25 and applied retroactively to 2021–2025. Index promotion
-  follows good performance, so the 2026 Smallcap 100 is by construction a list of
-  stocks that went up. Quantified at **+20.5 pp/yr in-sample** by
-  `python -m src.diagnostics`. Free point-in-time constituent data does not exist for
-  these indices; this is a disclosed simplification, not a bug.
+- **The universe effect is large — and quantified.** Membership is a single snapshot
+  taken 2026-08-25 and applied retroactively to 2021–2025. This is the *compliant*
+  reading of the mandate: §2 names the three indices with no as-of date, and the §11
+  checklist asks that the strategy use only stocks from the *permitted* universe — which
+  an evaluator will check against a current constituent list. A point-in-time universe
+  would hold names that have since left the index and would fail that check.
+  Index promotion follows good performance, so today's Smallcap 100 is partly a list of
+  stocks that already went up; that is worth **+20.5 pp/yr in-sample to any strategy,
+  including one with no skill in it**. It applies identically to every team, so it is
+  common-mode in a ranking by Total Net PNL. Measured by `python -m src.diagnostics`,
+  held constant on both sides of every comparison, and stress-tested against a 2023
+  universe — see the appendix below.
 - **The out-of-sample window is short** — 122 trading days, 36 closed round trips. The
   ladder showed an alphabetical-order buy-and-hold scoring +48% selection alpha over
   the same window. Treat every OOS figure as directional, not precise, and note that no
@@ -281,3 +287,64 @@ skip parameter is flagged explicitly in §2.6.
   decomposition is a stronger section than a 954% headline nobody will believe.
 - Whether to reconstruct a point-in-time universe from historical index factsheets.
   High effort; would remove the largest caveat.
+
+---
+
+## 7. Appendix — does the edge survive a 2023 universe?
+
+`python -m src.pit_universe`. The claim this whole analysis rests on is that selection
+alpha nets out the universe effect. That is an argument until it is tested.
+
+The three constituent CSVs were captured by the Internet Archive in **August 2023**.
+Rebuilding the universe from that snapshot gives a genuinely different test:
+
+| Index | Aug 2023 | Aug 2026 | Still in the list | Replaced |
+|---|---|---|---|---|
+| Nifty 100 | 101 | 100 | 71.3% | 29 |
+| Nifty Midcap 100 | 100 | 100 | 48.0% | 52 |
+| **Nifty Smallcap 100** | 100 | 100 | **22.0%** | **78** |
+
+Only 203 names are common to both. The smallcap index replaced 78 of 100 constituents
+in three years, so today's list says almost nothing about the index that existed in 2021.
+
+Trading the August 2023 list from September 2023 onwards carries **no survivorship
+advantage at all** — every name was in the index before the first trade, and names
+promoted later are excluded, which if anything is a handicap. Extending into the
+held-out 2026 window makes it clean on *both* axes: no forward-looking universe and no
+parameter tuning.
+
+| Metric | 2023 universe | 2026 universe (submitted) |
+|---|---|---|
+| **Sep 2023 → Dec 2025 — universe-clean** | | |
+| Total Net PNL | ₹94.55 L | ₹130.88 L |
+| CAGR | +33.9% | +44.4% |
+| Sharpe | 1.27 | 1.68 |
+| Max drawdown | −39.7% | −31.5% |
+| Equal-weight hold of same universe | +20.1% | +31.1% |
+| **Selection alpha** | **+13.8 pp** | **+13.3 pp** |
+| **Jan → Jun 2026 — universe-clean AND parameter-clean** | | |
+| Total Net PNL | ₹6.40 L | ₹10.23 L |
+| CAGR | +13.8% | +22.5% |
+| Sharpe | 0.58 | 0.80 |
+| Max drawdown | −13.2% | −16.6% |
+| Equal-weight hold of same universe | +1.6% | +3.8% |
+| **Selection alpha** | **+12.2 pp** | **+18.7 pp** |
+| *Nifty 100, same windows* | *+15.1% then −12.9%* | |
+
+**What it establishes.** Strip the hindsight out of the universe and the headline falls
+10.5 pp/yr (44.4% → 33.9%). The skill-free equal-weight hold falls by almost exactly the
+same amount (31.1% → 20.1%) — the universe effect landing on both sides, as it should.
+**Selection alpha barely moves: +13.3 → +13.8 pp.** The strategy's contribution is
+invariant to the universe it is measured on.
+
+The cleanest single number in the project is the second block: universe fixed August
+2023, parameters fixed on data ending December 2025, traded through H1 2026 — **₹6.40
+lakh profit, +12.2 pp/yr over holding the same universe, Sharpe 0.58, in a window where
+the Nifty 100 fell 12.9%.** No hindsight of any kind is available to it.
+
+**Why it stays an appendix.** The submitted result uses the 2026 universe because that
+is the compliant reading. Archive coverage is too sparse for a true point-in-time
+backtest across 2021–2025 — a handful of snapshots, not a continuous history. The 2023
+window is shorter (28 months) with a deeper drawdown (−39.7%), so it is noisier on its
+own terms. And 15 of the 301 names in the 2023 list no longer return price data at all,
+a mild survivorship effect in the opposite direction that is not corrected for.

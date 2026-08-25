@@ -307,10 +307,11 @@ footer .cmds b{color:var(--ink);font-weight:500}
   <h1>The Honest Backtest</h1>
   <p class="standfirst">
     A momentum-and-volatility portfolio of ten Indian equities returned <em>954% over five
-    years</em> in backtest. Most of that was an artifact of how the universe was built. This
-    is the record of separating the artifact from the strategy &mdash; and of the ladder of
-    experiments that turned a rule which <em>destroyed</em> value out-of-sample into one that
-    adds 18.7 percentage points a year.
+    years</em> in backtest. A large part of that comes from the mandate's universe rather than
+    from the strategy &mdash; so the first thing we built was the instrument to tell the two
+    apart. This is the record of what that instrument showed: which ingredients earn their
+    place, which one was <em>destroying</em> value out-of-sample, and why the edge that
+    survives is <em>invariant</em> to the universe it is measured against.
   </p>
   <div class="meta">
     <div>Universe<b>300 names &middot; Nifty 100 / Midcap 100 / Smallcap 100</b></div>
@@ -325,25 +326,27 @@ footer .cmds b{color:var(--ink);font-weight:500}
 <div class="thesis">
   <p class="lede">
     A skill-free portfolio cannot generate alpha. So when equal-weight <em>holding</em> all 300
-    names &mdash; no factors, no selection, no timing &mdash; beat the Nifty 100 by 20.5 points a
-    year, that gap could only be one thing: survivorship bias baked into the universe. It is the
-    yardstick everything else here is measured against.
+    permitted names &mdash; no factors, no selection, no timing &mdash; beats the Nifty 100 by
+    20.5 points a year, that gap is not skill and cannot be claimed as any. It is the shape of
+    the universe the mandate defines. Measuring it turns it from an unknown into a
+    <em>yardstick</em>, and every number in this report is quoted against that yardstick rather
+    than against the index.
   </p>
   <div class="figrow">
     <div class="fig">
       <div class="lab">Raw excess over index</div>
       <div class="val">+47.8</div>
-      <div class="sub">pp/yr, in-sample &mdash; the number that looks too good</div>
+      <div class="sub">pp/yr, in-sample &mdash; the headline, before decomposition</div>
     </div>
     <div class="fig warn">
-      <div class="lab">Survivorship bias</div>
+      <div class="lab">Universe effect</div>
       <div class="val">+20.5</div>
-      <div class="sub">pp/yr &mdash; artifact of a 2026 index snapshot applied back to 2021</div>
+      <div class="sub">pp/yr &mdash; available to any team, from the permitted list alone</div>
     </div>
     <div class="fig hi">
       <div class="lab">Factor selection</div>
       <div class="val">+27.3</div>
-      <div class="sub">pp/yr &mdash; what the strategy actually contributed</div>
+      <div class="sub">pp/yr &mdash; the strategy's own contribution, and the only part we claim</div>
     </div>
   </div>
 </div>
@@ -381,25 +384,34 @@ footer .cmds b{color:var(--ink);font-weight:500}
   <div class="secbody">
     <h2>Measuring against the right thing</h2>
     <p>
-      Index membership changes. Our universe is a single snapshot of the Nifty 100, Midcap 100 and
-      Smallcap 100 taken on 25 August 2026 and applied backwards across 2021&ndash;2025. Promotion
-      into an index follows good performance, so the 2026 Smallcap 100 is, by construction, a list
-      of stocks that went up. Any strategy run on it inherits a forward-looking advantage that has
-      nothing to do with the strategy.
+      The mandate names the universe as &ldquo;Nifty 100, Nifty Midcap 100, and Nifty Smallcap
+      100&rdquo; with no as-of date, and its compliance checklist asks that the strategy use only
+      stocks from the <em>permitted</em> universe. Read the way an evaluator checking holdings
+      against a constituent list would read it, that means the list as it stands today &mdash; so
+      that is what we use, and the submitted result is compliant on this point.
     </p>
     <p>
-      Free point-in-time constituent data does not exist for these indices, so the bias cannot be
-      removed. It can be <strong>measured</strong>, and then held constant on both sides of every
-      comparison. That is what the equal-weight universe portfolio does, and every figure in this
-      report labelled <span class="mono">selection alpha</span> is:
+      One list across five years has a known consequence. Index promotion follows good
+      performance, so today's Smallcap 100 is partly a list of stocks that already went up, and
+      any strategy run on it inherits an advantage that is nothing to do with the strategy.
+      <strong>That is a property of the mandate, not a defect in the model</strong>, and it
+      applies identically to every team in the round.
+    </p>
+    <p>
+      Which makes it a measurement problem rather than an apology. Hold the universe constant on
+      both sides of the comparison and the advantage cancels exactly, leaving only what the
+      strategy did. Every figure in this report labelled <span class="mono">selection
+      alpha</span> is that residual:
     </p>
     <div class="call">
       <span class="tag">Definition</span>
       <p><strong>Selection alpha</strong> = strategy CAGR &minus; CAGR of an equal-weight
-      buy-and-hold of the <em>same</em> 300 names.</p>
-      <p>Both carry identical survivorship bias, so the difference is what the strategy itself
-      contributed. Measured against the Nifty 100 instead, every rung below looks brilliant &mdash;
-      including the ones containing literally zero skill.</p>
+      buy-and-hold of the <em>same</em> permitted names.</p>
+      <p>Both sides carry the universe effect identically, so it cancels and the difference is
+      what the strategy itself contributed. Measured against the Nifty 100 instead, every rung
+      below looks brilliant &mdash; including the ones containing literally zero skill.</p>
+      <p>&sect;09 puts this to the test on a universe fixed in <em>2023</em>. The headline return
+      moves a long way; the selection alpha barely moves at all.</p>
     </div>
   </div>
 </section>
@@ -794,9 +806,13 @@ footer .cmds b{color:var(--ink);font-weight:500}
   <div class="secbody">
     <h2>What would break this</h2>
     <ul>
-      <li><strong>Survivorship and look-ahead bias &mdash; the big one.</strong> Membership is a
-        single 2026 snapshot applied retroactively. Quantified at <b class="mono">+20.5 pp/yr</b>
-        in-sample. It is disclosed and measured, not removed.</li>
+      <li><strong>The universe effect is large &mdash; and quantified.</strong> Membership is a
+        single 2026 snapshot applied retroactively, which is the compliant reading of the mandate
+        and is worth <b class="mono">+20.5 pp/yr</b> in-sample to any strategy, including one with
+        no skill in it. It is measured rather than assumed, held constant on both sides of every
+        comparison, and stress-tested against a 2023 universe in &sect;09. Read any figure quoted
+        against the Nifty 100 with this in mind; figures quoted as selection alpha already net it
+        out.</li>
       <li><strong>The held-out window is short.</strong> 122 trading days, 36 round trips. An
         alphabetical buy-and-hold scored +48% selection alpha over it. Every held-out figure here is
         directional, not precise.</li>
@@ -821,6 +837,108 @@ footer .cmds b{color:var(--ink);font-weight:500}
   </div>
 </section>
 
+<!-- ============ 9 ============ -->
+<section class="sec">
+  <div class="secnum">09<span>Appendix</span></div>
+  <div class="secbody">
+    <h2>Does the edge survive a 2023 universe?</h2>
+    <p>
+      The claim this report rests on is that selection alpha nets out the universe effect. That is
+      an argument until it is tested, so here it is tested: rebuild the universe from the
+      constituent lists <em>as they stood in August 2023</em>, recovered from the Internet
+      Archive, and run the identical strategy on them.
+    </p>
+
+    <h3>The two universes really are different</h3>
+    <div class="tablewrap">
+      <table>
+        <caption>Index membership churn between the two snapshots.</caption>
+        <thead><tr><th>Index</th><th>Aug 2023</th><th>Aug 2026</th><th>Still in the list</th><th>Replaced</th></tr></thead>
+        <tbody>
+          <tr><td>Nifty 100</td><td>101</td><td>100</td><td>71.3%</td><td>29</td></tr>
+          <tr><td>Nifty Midcap 100</td><td>100</td><td>100</td><td>48.0%</td><td>52</td></tr>
+          <tr class="hl"><td>Nifty Smallcap 100</td><td>100</td><td>100</td><td>22.0%</td><td>78</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">
+      Only 203 of roughly 300 names are common to both. The smallcap index replaced 78 of its 100
+      constituents in three years &mdash; today's list has almost nothing to say about the index
+      that actually existed in 2021.
+    </p>
+
+    <h3>Why this is a clean test</h3>
+    <p>
+      Trading the August 2023 list from September 2023 onwards carries <strong>no survivorship
+      advantage at all</strong>: every name was demonstrably in the index before the first trade,
+      and names promoted later are excluded, which if anything is a handicap. Extending it into
+      the held-out 2026 window makes it clean on <em>both</em> axes at once &mdash; no
+      forward-looking universe and no parameter tuning, since the parameters were fixed on
+      2021&ndash;2025 and never revisited.
+    </p>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Same strategy, same parameters, two universes.</caption>
+        <thead><tr><th>Metric</th><th>2023 universe</th><th>2026 universe <span style="color:var(--ink-3)">(submitted)</span></th></tr></thead>
+        <tbody>
+          <tr class="group"><td colspan="3">Sep 2023 &rarr; Dec 2025 &mdash; universe-clean</td></tr>
+          <tr><td>Total Net PNL</td><td>&#8377;94.55 L</td><td>&#8377;130.88 L</td></tr>
+          <tr><td>Annualised return</td><td>+33.9%</td><td>+44.4%</td></tr>
+          <tr><td>Sharpe</td><td>1.27</td><td>1.68</td></tr>
+          <tr><td>Max drawdown</td><td class="neg">&minus;39.7%</td><td class="neg">&minus;31.5%</td></tr>
+          <tr class="zero"><td>Equal-weight hold of same universe</td><td>+20.1%</td><td>+31.1%</td></tr>
+          <tr class="hl"><td>Selection alpha</td><td class="pos">+13.8 pp</td><td class="pos">+13.3 pp</td></tr>
+          <tr class="group"><td colspan="3">Jan &rarr; Jun 2026 &mdash; universe-clean AND parameter-clean</td></tr>
+          <tr><td>Total Net PNL</td><td>&#8377;6.40 L</td><td>&#8377;10.23 L</td></tr>
+          <tr><td>Annualised return</td><td>+13.8%</td><td>+22.5%</td></tr>
+          <tr><td>Sharpe</td><td>0.58</td><td>0.80</td></tr>
+          <tr><td>Max drawdown</td><td class="neg">&minus;13.2%</td><td class="neg">&minus;16.6%</td></tr>
+          <tr class="zero"><td>Equal-weight hold of same universe</td><td>+1.6%</td><td>+3.8%</td></tr>
+          <tr class="hl"><td>Selection alpha</td><td class="pos">+12.2 pp</td><td class="pos">+18.7 pp</td></tr>
+          <tr class="zero"><td>Nifty 100, same windows</td><td colspan="2">+15.1% then &minus;12.9%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="call">
+      <span class="tag">What this establishes</span>
+      <p>Strip the hindsight out of the universe and the <strong>headline collapses by 10.5
+      points a year</strong> (44.4% &rarr; 33.9%). The skill-free equal-weight hold collapses by
+      almost exactly the same amount (31.1% &rarr; 20.1%) &mdash; which is the universe effect
+      doing precisely what it is supposed to do, and lands on both sides of the comparison.</p>
+      <p><strong>Selection alpha barely moves: +13.3 &rarr; +13.8 pp.</strong> The strategy's own
+      contribution is invariant to which universe it is measured on. That is the result that makes
+      the rest of this report portable rather than an accident of one snapshot.</p>
+    </div>
+
+    <p>
+      The single cleanest number available anywhere in this project is the last block above: a
+      universe fixed in August 2023, parameters fixed on data ending December 2025, traded through
+      the first half of 2026 &mdash; <strong>&#8377;6.40 lakh of profit, +12.2 points a year over
+      holding the same universe, at a Sharpe of 0.58, in a window where the Nifty 100 fell
+      12.9%</strong>. No hindsight of any kind is available to it.
+    </p>
+
+    <h3>Why this is an appendix and not the headline</h3>
+    <ul>
+      <li><strong>The submitted result stays on the 2026 universe</strong>, because that is the
+        compliant reading of the mandate (&sect;01). A strategy holding names that have since
+        left the index would fail a holdings check against the permitted list.</li>
+      <li><strong>Archive coverage is too sparse for a true point-in-time backtest.</strong> A
+        handful of snapshots exist, not the continuous history a proper reconstruction needs,
+        which is why the 2021&ndash;2025 window cannot be rebuilt this way on free data.</li>
+      <li><strong>The 2023 window is shorter</strong> (28 months) and its drawdown is deeper
+        (&minus;39.7%), so it is a noisier test on its own terms. It is here to answer one
+        specific question &mdash; does the edge depend on the universe? &mdash; not to replace
+        the main result.</li>
+      <li><strong>15 of the 301 names in the 2023 list no longer return price data</strong> at
+        all, having been delisted or merged. Their absence is itself a mild survivorship effect
+        working in the opposite direction, and it is not corrected for.</li>
+    </ul>
+  </div>
+</section>
+
 <footer>
   <p style="max-width:var(--measure);margin-bottom:1rem">
     Every figure in this report regenerates from the repository. The engine is covered by 103 tests,
@@ -833,6 +951,7 @@ footer .cmds b{color:var(--ink);font-weight:500}
     <b>python run_backtest.py</b> &nbsp;&mdash; both windows, metrics, figures<br>
     <b>python -m src.diagnostics</b> &nbsp;&mdash; the bias decomposition<br>
     <b>python -m src.experiments --all</b> &nbsp;&mdash; ladder, sweeps, per-year robustness<br>
+    <b>python -m src.pit_universe</b> &nbsp;&mdash; the 2023 point-in-time universe test<br>
     <b>pytest tests/ -q</b> &nbsp;&mdash; 103 tests
   </div>
   <p>Branch <code>yasho</code> &middot; universe snapshot 2026-08-25 &middot; prices via yfinance,

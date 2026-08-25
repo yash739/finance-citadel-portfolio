@@ -53,7 +53,9 @@ src/
   diagnostics.py            survivorship-bias decomposition: how much of the result is real
   experiments.py            strategy ladder + parameter sweeps: how the strategy was chosen
 notebooks/                scratch/exploration only — final numbers must come from src/ + run_backtest.py
-reports/                   generated outputs (figures, metrics.json) + the written 5-6 page report
+reports/                   generated outputs (figures, metrics.json) + the written report
+  report.html              the written report: findings, ladder, sweeps, results (self-contained)
+  build_chart_data.py      extracts the NAV series report.html plots
   REPORT_TEMPLATE.md       5-6 page report skeleton: guidelines structure, required metrics table, checklist
 tests/                     unit tests for backtest accounting and metrics (correctness of the engine matters most)
 docs/strategy_notes.md      the actual stock-selection / weighting / rebalancing rules in plain language

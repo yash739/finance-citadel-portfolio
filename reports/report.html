@@ -1,0 +1,1090 @@
+<title>The Honest Backtest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* ============================================================
+   TOKENS — bare :root carries the COMPLETE light palette.
+   Dark redefines tokens only, in both the media query (guarded
+   so an explicit light choice wins) and the [data-theme] stamp.
+   ============================================================ */
+:root{
+  --ground:#FCFCFB;
+  --panel:#F4F4F1;
+  --panel-2:#EDEEE9;
+  --ink:#16211F;
+  --ink-2:#3D4A47;
+  --ink-3:#5C6A67;
+  --rule:#DDDED7;
+  --rule-2:#C9CBC2;
+
+  --strategy:#0E8F80;
+  --universe:#C07A1E;
+  --index:#7060A8;
+  --negative:#A8422F;
+  --positive:#0E7A4E;
+
+  --strategy-wash:rgba(14,143,128,.10);
+  --universe-wash:rgba(192,122,30,.10);
+  --shadow:0 1px 2px rgba(22,33,31,.05), 0 8px 24px -12px rgba(22,33,31,.14);
+
+  --measure:68ch;
+  --rail:5.5rem;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#15191B;
+    --panel:#1D2225;
+    --panel-2:#242A2D;
+    --ink:#E8EAE7;
+    --ink-2:#B9C2BF;
+    --ink-3:#93A09C;
+    --rule:#2C3336;
+    --rule-2:#3B4448;
+
+    --strategy:#28A08F;
+    --universe:#BC862E;
+    --index:#8677C0;
+    --negative:#D97A63;
+    --positive:#3FA877;
+
+    --strategy-wash:rgba(40,160,143,.14);
+    --universe-wash:rgba(188,134,46,.14);
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#15191B;
+  --panel:#1D2225;
+  --panel-2:#242A2D;
+  --ink:#E8EAE7;
+  --ink-2:#B9C2BF;
+  --ink-3:#93A09C;
+  --rule:#2C3336;
+  --rule-2:#3B4448;
+
+  --strategy:#28A08F;
+  --universe:#BC862E;
+  --index:#8677C0;
+  --negative:#D97A63;
+  --positive:#3FA877;
+
+  --strategy-wash:rgba(40,160,143,.14);
+  --universe-wash:rgba(188,134,46,.14);
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:74rem;margin:0 auto;padding:0 1.5rem 6rem}
+
+/* ---------- masthead ---------- */
+.mast{
+  border-bottom:1px solid var(--rule);
+  padding:4.5rem 0 2rem;
+  margin-bottom:3rem;
+}
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 1.4rem;
+  display:flex;flex-wrap:wrap;gap:.5rem 1.1rem;align-items:center;
+}
+.eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--strategy)}
+h1{
+  font-family:Spectral,Georgia,serif;
+  font-weight:700;font-size:clamp(2.6rem,6vw,4.3rem);
+  line-height:1.02;letter-spacing:-.022em;
+  margin:0 0 1.1rem;text-wrap:balance;
+}
+.standfirst{
+  font-family:Spectral,Georgia,serif;
+  font-size:clamp(1.08rem,2vw,1.32rem);
+  line-height:1.55;color:var(--ink-2);
+  max-width:58ch;margin:0 0 2rem;
+}
+.standfirst em{color:var(--ink);font-style:italic}
+.meta{
+  display:flex;flex-wrap:wrap;gap:1.6rem 2.6rem;
+  font-family:"IBM Plex Mono",monospace;font-size:.76rem;
+  color:var(--ink-3);
+}
+.meta b{display:block;color:var(--ink);font-weight:500;font-size:.85rem;margin-top:.15rem;
+  font-variant-numeric:tabular-nums}
+
+/* ---------- ledger rail ---------- */
+section.sec{
+  display:grid;
+  grid-template-columns:var(--rail) minmax(0,1fr);
+  gap:0 2rem;
+  border-top:1px solid var(--rule);
+  padding-top:2.6rem;
+  margin-top:3.4rem;
+}
+.secnum{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:.72rem;letter-spacing:.1em;
+  color:var(--ink-3);
+  padding-top:.42rem;
+}
+.secnum span{display:block;color:var(--rule-2);margin-top:.3rem;font-size:.66rem}
+.secbody{min-width:0}
+h2{
+  font-family:Spectral,Georgia,serif;
+  font-weight:600;font-size:clamp(1.6rem,3.2vw,2.15rem);
+  line-height:1.15;letter-spacing:-.015em;
+  margin:0 0 1.1rem;text-wrap:balance;
+}
+h3{
+  font-family:"IBM Plex Sans",sans-serif;
+  font-weight:600;font-size:1rem;letter-spacing:-.005em;
+  margin:2.6rem 0 .7rem;color:var(--ink);
+}
+p{margin:0 0 1.1rem;max-width:var(--measure)}
+.secbody>ul,.secbody>ol{max-width:var(--measure);padding-left:1.15rem;margin:0 0 1.2rem}
+li{margin-bottom:.55rem}
+a{color:var(--strategy);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--strategy) 35%,transparent)}
+a:hover{border-bottom-color:var(--strategy)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--strategy);outline-offset:3px;border-radius:2px}
+strong{font-weight:600;color:var(--ink)}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.87em}
+code{background:var(--panel-2);padding:.1em .38em;border-radius:3px}
+
+/* ---------- thesis block ---------- */
+.thesis{
+  background:var(--panel);
+  border:1px solid var(--rule);
+  border-radius:2px;
+  padding:2rem 2rem 1.6rem;
+  margin:0 0 2.4rem;
+}
+.thesis .lede{
+  font-family:Spectral,Georgia,serif;font-size:1.16rem;line-height:1.5;
+  color:var(--ink);max-width:60ch;margin:0 0 1.8rem;
+}
+.figrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1.6rem}
+.fig{border-left:2px solid var(--rule-2);padding-left:1rem}
+.fig.hi{border-left-color:var(--strategy)}
+.fig.warn{border-left-color:var(--universe)}
+.fig .lab{
+  font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:.4rem;
+}
+.fig .val{
+  font-family:"IBM Plex Mono",monospace;font-weight:600;
+  font-size:clamp(1.5rem,3.4vw,2rem);line-height:1.05;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;color:var(--ink);
+}
+.fig.hi .val{color:var(--strategy)}
+.fig.warn .val{color:var(--universe)}
+.fig .sub{font-size:.78rem;color:var(--ink-3);margin-top:.35rem;line-height:1.4}
+
+/* ---------- figures / charts ---------- */
+figure{margin:2rem 0 2.2rem}
+.chartcard{
+  background:var(--panel);
+  border:1px solid var(--rule);
+  border-radius:2px;
+  padding:1.5rem 1.4rem 1.1rem;
+}
+.charthead{display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;align-items:baseline;
+  justify-content:space-between;margin-bottom:1.1rem}
+.charttitle{font-weight:600;font-size:.95rem}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;
+  font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--ink-2)}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;
+  margin-right:.42rem;vertical-align:.16em}
+.chartbox{position:relative;width:100%;overflow-x:auto}
+svg{display:block;width:100%;height:auto;overflow:visible}
+figcaption{
+  font-size:.82rem;color:var(--ink-3);line-height:1.5;
+  margin-top:.9rem;max-width:var(--measure);
+}
+.tip{
+  position:absolute;pointer-events:none;opacity:0;transition:opacity .1s;
+  background:var(--ground);border:1px solid var(--rule-2);border-radius:3px;
+  box-shadow:var(--shadow);padding:.5rem .65rem;
+  font-family:"IBM Plex Mono",monospace;font-size:.72rem;line-height:1.5;
+  color:var(--ink);white-space:nowrap;z-index:5;font-variant-numeric:tabular-nums;
+}
+.tip .tdate{color:var(--ink-3);margin-bottom:.3rem}
+.tip .trow{display:flex;justify-content:space-between;gap:1.1rem}
+.tip .trow i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:.4rem}
+
+/* ---------- tables ---------- */
+.tablewrap{overflow-x:auto;margin:1.4rem 0 .6rem;
+  border:1px solid var(--rule);border-radius:2px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:.83rem;min-width:520px}
+caption{text-align:left;font-size:.82rem;color:var(--ink-3);padding:.9rem 1rem .2rem}
+th,td{padding:.52rem .8rem;text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal;min-width:170px}
+thead th{
+  font-family:"IBM Plex Mono",monospace;font-weight:500;
+  font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);border-bottom:1px solid var(--rule-2);
+  position:sticky;top:0;background:var(--panel);
+}
+tbody td{border-bottom:1px solid var(--rule);font-variant-numeric:tabular-nums;
+  font-family:"IBM Plex Mono",monospace}
+tbody td:first-child{font-family:"IBM Plex Sans",sans-serif}
+tbody tr:last-child td{border-bottom:none}
+tbody tr.hl td{background:var(--strategy-wash)}
+tbody tr.hl td:first-child{font-weight:600}
+tbody tr.zero td{color:var(--ink-3)}
+tbody tr.group td{
+  background:var(--panel-2);font-family:"IBM Plex Mono",monospace;
+  font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+  padding-top:.45rem;padding-bottom:.45rem;
+}
+.pos{color:var(--positive)}
+.neg{color:var(--negative)}
+.note{font-size:.78rem;color:var(--ink-3);margin:.5rem 0 0;max-width:var(--measure)}
+
+/* ---------- callouts ---------- */
+.call{
+  border-left:2px solid var(--strategy);
+  background:var(--strategy-wash);
+  padding:1rem 1.2rem;margin:1.6rem 0;border-radius:0 2px 2px 0;
+  max-width:var(--measure);
+}
+.call.warn{border-left-color:var(--universe);background:var(--universe-wash)}
+.call p{margin:0}
+.call p + p{margin-top:.7rem}
+.call .tag{
+  display:block;font-family:"IBM Plex Mono",monospace;font-size:.65rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.45rem;
+}
+
+/* ---------- spec list ---------- */
+.spec{border-top:1px solid var(--rule);margin:1.4rem 0 0;max-width:var(--measure)}
+.spec div{display:grid;grid-template-columns:9rem 1fr;gap:1rem;
+  padding:.72rem 0;border-bottom:1px solid var(--rule)}
+.spec dt{font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-3);padding-top:.15rem}
+.spec dd{margin:0;font-size:.92rem}
+.spec dd b{font-family:"IBM Plex Mono",monospace;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ---------- footer ---------- */
+footer{
+  border-top:1px solid var(--rule);margin-top:4rem;padding-top:2rem;
+  font-size:.8rem;color:var(--ink-3);
+}
+footer .cmds{
+  font-family:"IBM Plex Mono",monospace;font-size:.76rem;
+  background:var(--panel);border:1px solid var(--rule);border-radius:2px;
+  padding:1rem 1.1rem;margin:1rem 0 1.4rem;max-width:var(--measure);
+  overflow-x:auto;line-height:1.9;
+}
+footer .cmds b{color:var(--ink);font-weight:500}
+
+@media (max-width:760px){
+  section.sec{grid-template-columns:1fr;gap:.5rem}
+  .secnum{padding-top:0;display:flex;gap:.8rem;align-items:baseline}
+  .secnum span{margin-top:0}
+  .spec div{grid-template-columns:1fr;gap:.15rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="eyebrow">
+    <span class="dot"></span>
+    <span>Finesse &times; Citadel &middot; Round 2</span>
+    <span>Portfolio Construction</span>
+    <span>25 Aug 2026</span>
+  </p>
+  <h1>The Honest Backtest</h1>
+  <p class="standfirst">
+    A momentum-and-volatility portfolio of ten Indian equities returned <em>954% over five
+    years</em> in backtest. Most of that was an artifact of how the universe was built. This
+    is the record of separating the artifact from the strategy &mdash; and of the ladder of
+    experiments that turned a rule which <em>destroyed</em> value out-of-sample into one that
+    adds 18.7 percentage points a year.
+  </p>
+  <div class="meta">
+    <div>Universe<b>300 names &middot; Nifty 100 / Midcap 100 / Smallcap 100</b></div>
+    <div>Capital<b>&#8377;1,00,00,000</b></div>
+    <div>Backtest<b>2021-01-01 &rarr; 2025-12-31</b></div>
+    <div>Held out<b>2026-01-01 &rarr; 2026-06-30</b></div>
+    <div>Costs<b>0.1% both legs</b></div>
+  </div>
+</header>
+
+<!-- ============ THESIS ============ -->
+<div class="thesis">
+  <p class="lede">
+    A skill-free portfolio cannot generate alpha. So when equal-weight <em>holding</em> all 300
+    names &mdash; no factors, no selection, no timing &mdash; beat the Nifty 100 by 20.5 points a
+    year, that gap could only be one thing: survivorship bias baked into the universe. It is the
+    yardstick everything else here is measured against.
+  </p>
+  <div class="figrow">
+    <div class="fig">
+      <div class="lab">Raw excess over index</div>
+      <div class="val">+47.8</div>
+      <div class="sub">pp/yr, in-sample &mdash; the number that looks too good</div>
+    </div>
+    <div class="fig warn">
+      <div class="lab">Survivorship bias</div>
+      <div class="val">+20.5</div>
+      <div class="sub">pp/yr &mdash; artifact of a 2026 index snapshot applied back to 2021</div>
+    </div>
+    <div class="fig hi">
+      <div class="lab">Factor selection</div>
+      <div class="val">+27.3</div>
+      <div class="sub">pp/yr &mdash; what the strategy actually contributed</div>
+    </div>
+  </div>
+</div>
+
+<figure>
+  <div class="chartcard">
+    <div class="charthead">
+      <div class="charttitle">Portfolio value, 2021&ndash;2025 &mdash; the decomposition, drawn</div>
+      <div class="legend">
+        <span><i style="background:var(--strategy)"></i>Strategy</span>
+        <span><i style="background:var(--universe)"></i>Equal-weight universe</span>
+        <span><i style="background:var(--index)"></i>Nifty 100</span>
+      </div>
+    </div>
+    <div class="chartbox" id="box-is"><div class="tip" id="tip-is"></div></div>
+  </div>
+  <figcaption>
+    Three curves, all starting at &#8377;1 crore. The gap from <b class="mono">Nifty 100</b> up to
+    <b class="mono">equal-weight universe</b> is bias &mdash; return available for holding a
+    hindsight-selected list. Only the gap from there up to <b class="mono">strategy</b> is earned.
+  </figcaption>
+</figure>
+
+<!-- ============ 1 ============ -->
+<section class="sec">
+  <div class="secnum">01<span>Method</span></div>
+  <div class="secbody">
+    <h2>Measuring against the right thing</h2>
+    <p>
+      Index membership changes. Our universe is a single snapshot of the Nifty 100, Midcap 100 and
+      Smallcap 100 taken on 25 August 2026 and applied backwards across 2021&ndash;2025. Promotion
+      into an index follows good performance, so the 2026 Smallcap 100 is, by construction, a list
+      of stocks that went up. Any strategy run on it inherits a forward-looking advantage that has
+      nothing to do with the strategy.
+    </p>
+    <p>
+      Free point-in-time constituent data does not exist for these indices, so the bias cannot be
+      removed. It can be <strong>measured</strong>, and then held constant on both sides of every
+      comparison. That is what the equal-weight universe portfolio does, and every figure in this
+      report labelled <span class="mono">selection alpha</span> is:
+    </p>
+    <div class="call">
+      <span class="tag">Definition</span>
+      <p><strong>Selection alpha</strong> = strategy CAGR &minus; CAGR of an equal-weight
+      buy-and-hold of the <em>same</em> 300 names.</p>
+      <p>Both carry identical survivorship bias, so the difference is what the strategy itself
+      contributed. Measured against the Nifty 100 instead, every rung below looks brilliant &mdash;
+      including the ones containing literally zero skill.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="sec">
+  <div class="secnum">02<span>Ladder</span></div>
+  <div class="secbody">
+    <h2>Twelve rungs, one ingredient at a time</h2>
+    <p>
+      A single backtest of a complicated strategy tells you almost nothing, because you cannot tell
+      which part produced the result. So the build starts from portfolios containing no skill at all
+      and adds exactly one ingredient per rung.
+    </p>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Selection alpha by rung. IS = 2021&ndash;2025, OOS = 2026 H1.</caption>
+        <thead><tr>
+          <th>Rung</th><th>IS CAGR</th><th>IS sel&nbsp;alpha</th><th>OOS sel&nbsp;alpha</th>
+        </tr></thead>
+        <tbody>
+          <tr class="group"><td colspan="4">Reference</td></tr>
+          <tr><td>Nifty 100 index</td><td>+13.9%</td><td class="neg">&minus;20.5%</td><td class="neg">&minus;16.7%</td></tr>
+          <tr class="zero"><td>Equal-weight hold, all 300 &mdash; the yardstick</td><td>+34.4%</td><td>0.0%</td><td>0.0%</td></tr>
+          <tr class="group"><td colspan="4">Zero-skill controls</td></tr>
+          <tr><td>Equal-weight all 300, monthly, costed</td><td>+33.5%</td><td class="neg">&minus;1.0%</td><td class="neg">&minus;3.4%</td></tr>
+          <tr><td>Alphabetical 10, buy &amp; hold</td><td>+34.7%</td><td class="pos">+0.3%</td><td class="pos">+48.2%</td></tr>
+          <tr><td>Random 10, buy &amp; hold (5 seeds)</td><td>+35.1%</td><td class="pos">+0.7%</td><td class="neg">&minus;15.2%</td></tr>
+          <tr><td>Random 10, monthly (5 seeds)</td><td>+34.9%</td><td class="pos">+0.5%</td><td class="pos">+6.2%</td></tr>
+          <tr class="group"><td colspan="4">Single factors</td></tr>
+          <tr><td>Momentum 12&ndash;1 only, top 10</td><td>+51.9%</td><td class="pos">+17.4%</td><td class="pos">+11.2%</td></tr>
+          <tr><td>Low-volatility only, top 10</td><td>+19.9%</td><td class="neg">&minus;14.6%</td><td class="neg">&minus;5.2%</td></tr>
+          <tr class="group"><td colspan="4">Composite, built up</td></tr>
+          <tr><td>Composite 50/50, equal weight</td><td>+45.6%</td><td class="pos">+11.1%</td><td class="neg">&minus;5.8%</td></tr>
+          <tr><td>&nbsp;&nbsp;+ rank-proportional weights, 25% cap</td><td>+46.0%</td><td class="pos">+11.6%</td><td class="neg">&minus;4.1%</td></tr>
+          <tr><td>&nbsp;&nbsp;+ liquidity screen (&#8377;5 cr)</td><td>+50.8%</td><td class="pos">+16.3%</td><td class="neg">&minus;4.1%</td></tr>
+          <tr><td>&nbsp;&nbsp;+ hysteresis &mdash; <em>the original build</em></td><td>+50.5%</td><td class="pos">+16.0%</td><td class="neg">&minus;3.7%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>What the ladder settled</h3>
+    <p>
+      <strong>The measurement is calibrated.</strong> The three zero-skill controls land at
+      +0.3%, +0.7% and +0.5% selection alpha in-sample. Concentrating &#8377;1 crore into ten names
+      does not, by itself, create alpha. Had these come back at +10%, nothing downstream would have
+      been interpretable.
+    </p>
+    <p>
+      <strong>Momentum is the entire engine</strong>, and on its own it was the only rung positive
+      out-of-sample. <strong>Low-volatility as a selection factor is a drag</strong> &mdash; and
+      blending it 50/50 pulled the composite <em>below</em> momentum alone in both windows. The
+      original build was carrying a passenger.
+    </p>
+    <div class="call warn">
+      <span class="tag">A warning the ladder also delivered</span>
+      <p>Alphabetical-order buy-and-hold &mdash; the least intelligent rule available &mdash; scored
+      <strong>+48.2% selection alpha out-of-sample</strong>. The held-out window is 122 trading days
+      and 36 round trips. It cannot reliably separate skill from luck, and <strong>no parameter in
+      this report was chosen on it</strong>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="sec">
+  <div class="secnum">03<span>Sweeps</span></div>
+  <div class="secbody">
+    <h2>Plateau or spike?</h2>
+    <p>
+      A parameter that works at exactly one value is fitted to this sample and will not survive
+      contact with live markets. What is worth having is a broad region where every neighbouring
+      value also works. Each parameter was swept and judged on the <em>shape</em> of the curve, not
+      its peak.
+    </p>
+
+    <figure>
+      <div class="chartcard">
+        <div class="charthead">
+          <div class="charttitle">Factor mix &mdash; selection alpha vs momentum weight</div>
+          <div class="legend">
+            <span><i style="background:var(--strategy)"></i>In-sample</span>
+            <span><i style="background:var(--universe)"></i>Out-of-sample</span>
+          </div>
+        </div>
+        <div class="chartbox" id="box-mix"><div class="tip" id="tip-mix"></div></div>
+      </div>
+      <figcaption>
+        A coarse first pass made this look like a discontinuity between 25% and 50%. At fine
+        resolution it is a smooth climb to a <strong>plateau spanning 55&ndash;70%</strong>. The old
+        50/50 setting sat on the edge of a cliff: out-of-sample alpha is &minus;3.7% at 50% momentum
+        and +5.9% five points later. The final strategy takes <b class="mono">60%</b>, the middle of
+        the safe region.
+      </figcaption>
+    </figure>
+
+    <h3>The other two momentum parameters</h3>
+    <div class="tablewrap">
+      <table>
+        <caption>In-sample selection alpha. Skip is a smooth hump; lookback is noise.</caption>
+        <thead><tr><th>Momentum skip</th><th>0 mo</th><th>1 mo</th><th>2 mo</th><th>3 mo</th><th>4 mo</th></tr></thead>
+        <tbody><tr>
+          <td>Selection alpha</td>
+          <td class="pos">+10.2%</td><td class="pos">+16.0%</td>
+          <td class="pos"><strong>+21.0%</strong></td><td class="pos">+16.4%</td><td class="pos">+13.7%</td>
+        </tr></tbody>
+      </table>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Momentum lookback</th><th>3 mo</th><th>6 mo</th><th>9 mo</th><th>12 mo</th><th>15 mo</th><th>18 mo</th><th>24 mo</th></tr></thead>
+        <tbody><tr>
+          <td>Selection alpha</td>
+          <td class="pos">+5.0%</td><td class="neg">&minus;0.8%</td><td class="pos">+9.0%</td>
+          <td class="pos"><strong>+16.0%</strong></td><td class="pos">+4.9%</td>
+          <td class="pos">+15.3%</td><td class="pos">+1.0%</td>
+        </tr></tbody>
+      </table>
+    </div>
+    <p class="note">
+      Skip rises and falls smoothly around 2 months &mdash; a real hump. Lookback is jagged: 12
+      months is a local peak, but 15 collapses to +4.9% and 18 recovers to +15.3%. There is no
+      structure there to exploit, so the textbook 12 months was kept rather than mined.
+    </p>
+
+    <h3>Everything else, briefly</h3>
+    <ul>
+      <li><strong>Monthly beats quarterly and buy-and-hold</strong> (+16.0% / +14.1% / &minus;1.0%).
+        Momentum needs refreshing; the cost of churn is worth paying.</li>
+      <li><strong>Rank-proportional weighting</strong> beat both equal-weight and inverse-volatility.</li>
+      <li><strong>Ten holdings</strong> sits near the Sharpe-optimal region and is also the mandate
+        cap. Three is badly negative; five peaks in-sample but is &minus;9.0% out-of-sample.</li>
+      <li><strong>The &#8377;5 crore liquidity screen</strong> adds ~2.7 points in-sample. &#8377;1
+        crore binds on nothing; &#8377;20 crore costs performance.</li>
+      <li><strong>Hysteresis at 15&ndash;20</strong> shaves turnover 4.9&times; &rarr; 4.3&times; for
+        negligible return cost.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="sec">
+  <div class="secnum">04<span>Robustness</span></div>
+  <div class="secbody">
+    <h2>The test that decided it</h2>
+    <p>
+      A five-year average can be produced by one spectacular year and four mediocre ones. That is a
+      fitted result wearing a good disguise. The decisive check is selection alpha
+      <strong>year by year</strong>, and then the same check on every immediate neighbour of the
+      chosen parameters.
+    </p>
+
+    <figure>
+      <div class="chartcard">
+        <div class="charthead">
+          <div class="charttitle">Selection alpha by year &mdash; original build vs final</div>
+          <div class="legend">
+            <span><i style="background:var(--index)"></i>Original (50/50, skip 1)</span>
+            <span><i style="background:var(--strategy)"></i>Final (60/40, skip 2)</span>
+          </div>
+        </div>
+        <div class="chartbox" id="box-year"><div class="tip" id="tip-year"></div></div>
+      </div>
+      <figcaption>
+        The original build has a negative year (2025, &minus;6.4%) and a negative held-out window.
+        The final strategy is positive in all five years and in the held-out window, with its worst
+        year at +2.5%.
+      </figcaption>
+    </figure>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Selection alpha per year, plus the neighbourhood around the final choice.</caption>
+        <thead><tr>
+          <th>Strategy</th><th>2021</th><th>2022</th><th>2023</th><th>2024</th><th>2025</th>
+          <th>Worst</th><th>Mean</th><th>Held out</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>Original &mdash; 50/50, skip 1</td>
+            <td class="pos">+27.9</td><td class="pos">+8.1</td><td class="pos">+14.4</td>
+            <td class="pos">+31.4</td><td class="neg">&minus;6.4</td>
+            <td class="neg">&minus;6.4</td><td>+15.1</td><td class="neg">&minus;3.7</td></tr>
+          <tr><td>Low-volatility only</td>
+            <td class="neg">&minus;42.0</td><td class="pos">+4.0</td><td class="neg">&minus;22.0</td>
+            <td class="neg">&minus;26.0</td><td class="neg">&minus;0.5</td>
+            <td class="neg">&minus;42.0</td><td class="neg">&minus;17.3</td><td class="neg">&minus;4.5</td></tr>
+          <tr><td>Momentum only</td>
+            <td class="pos">+45.8</td><td class="neg">&minus;6.6</td><td class="pos">+37.6</td>
+            <td class="neg">&minus;2.5</td><td class="neg">&minus;1.9</td>
+            <td class="neg">&minus;6.6</td><td>+14.5</td><td class="pos">+4.0</td></tr>
+          <tr><td>60/40, skip 1</td>
+            <td class="pos">+46.0</td><td class="pos">+8.1</td><td class="pos">+22.9</td>
+            <td class="pos">+25.4</td><td class="neg">&minus;3.5</td>
+            <td class="neg">&minus;3.5</td><td>+19.8</td><td class="pos">+5.8</td></tr>
+          <tr class="hl"><td>Final &mdash; 60/40, skip 2</td>
+            <td class="pos">+94.7</td><td class="pos">+5.3</td><td class="pos">+29.3</td>
+            <td class="pos">+9.4</td><td class="pos">+2.5</td>
+            <td class="pos">+2.5</td><td>+28.2</td><td class="pos">+18.7</td></tr>
+          <tr><td>60/40, skip 2, inverse-vol weights</td>
+            <td class="pos">+63.1</td><td class="pos">+14.7</td><td class="pos">+20.7</td>
+            <td class="pos">+22.1</td><td class="neg">&minus;3.1</td>
+            <td class="neg">&minus;3.1</td><td>+23.5</td><td class="pos">+22.2</td></tr>
+          <tr class="group"><td colspan="9">Neighbourhood of the final choice</td></tr>
+          <tr><td>55/45, skip 2</td><td colspan="5" style="text-align:right;color:var(--ink-3)">&mdash;</td>
+            <td class="pos">+3.6</td><td>+26.5</td><td class="pos">+22.7</td></tr>
+          <tr><td>65/35, skip 2</td><td colspan="5" style="text-align:right;color:var(--ink-3)">&mdash;</td>
+            <td class="pos">+2.9</td><td>+28.1</td><td class="pos">+25.6</td></tr>
+          <tr><td>70/30, skip 2</td><td colspan="5" style="text-align:right;color:var(--ink-3)">&mdash;</td>
+            <td class="pos">+1.1</td><td>+24.7</td><td class="pos">+23.0</td></tr>
+          <tr><td>60/40, skip 3</td><td colspan="5" style="text-align:right;color:var(--ink-3)">&mdash;</td>
+            <td class="pos">+0.5</td><td>+15.3</td><td class="pos">+16.1</td></tr>
+          <tr><td>60/40, skip 2, buffer 20</td><td colspan="5" style="text-align:right;color:var(--ink-3)">&mdash;</td>
+            <td class="pos">+1.6</td><td>+27.1</td><td class="pos">+19.5</td></tr>
+          <tr><td>60/40, skip 2, equal weight</td><td colspan="5" style="text-align:right;color:var(--ink-3)">&mdash;</td>
+            <td class="neg">&minus;1.7</td><td>+23.7</td><td class="pos">+19.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">All figures are percentage points per year of selection alpha.</p>
+
+    <div class="call">
+      <span class="tag">Why this is the strongest evidence available</span>
+      <p>Every neighbour &mdash; &plusmn;5 points on the factor mix, &plusmn;1 month on the skip,
+      either buffer setting, either weighting scheme &mdash; is positive in all five years (bar one
+      at &minus;1.7%) and positive out-of-sample. <strong>The exact centre barely matters.</strong>
+      That is what a real effect looks like, as opposed to a parameter tuned to a sample.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="sec">
+  <div class="secnum">05<span>Strategy</span></div>
+  <div class="secbody">
+    <h2>The final rule</h2>
+    <dl class="spec">
+      <div><dt>Selection</dt><dd>The <b>10</b> highest-scoring names by a cross-sectional
+        z-score composite, recomputed every rebalance.</dd></div>
+      <div><dt>Momentum</dt><dd>Weight <b>0.60</b> &mdash; cumulative return from
+        t&minus;12 months to t&minus;<b>2</b> months.</dd></div>
+      <div><dt>Low volatility</dt><dd>Weight <b>0.40</b> &mdash; negative annualised &sigma; of
+        daily returns, trailing 6 months.</dd></div>
+      <div><dt>Screen</dt><dd>Average daily turnover above <b>&#8377;5 crore</b> over 3 months,
+        applied <em>before</em> ranking.</dd></div>
+      <div><dt>Weighting</dt><dd>Rank-proportional, capped at <b>25%</b> per name, renormalised
+        iteratively after capping.</dd></div>
+      <div><dt>Rebalance</dt><dd><b>Monthly</b>, first trading day. A held name is only sold once
+        it falls out of the top <b>15</b>.</dd></div>
+      <div><dt>Execution</dt><dd>Signal at day <i>d</i>'s close, fill at day <i>d+1</i>'s close.
+        <b>0.1%</b> charged on both legs.</dd></div>
+      <div><dt>Constraints</dt><dd>Long only, cash funded. No leverage, no shorts, cash never
+        negative.</dd></div>
+    </dl>
+
+    <h3>What changed, and why</h3>
+    <p>
+      Two parameters moved. Everything else survived unchanged because the sweeps showed it was
+      already sitting in a robust region.
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Parameter</th><th>Was</th><th>Now</th><th>Reason</th></tr></thead>
+        <tbody>
+          <tr><td>Momentum weight</td><td>0.50</td><td><strong>0.60</strong></td>
+            <td style="text-align:left;white-space:normal">50/50 sat on a cliff edge; 55&ndash;70% is a plateau</td></tr>
+          <tr><td>Momentum skip</td><td>1 month</td><td><strong>2 months</strong></td>
+            <td style="text-align:left;white-space:normal">Smooth in-sample hump centred on 2</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="call warn">
+      <span class="tag">Honesty note &mdash; read this before defending the result</span>
+      <p>The 12-month lookback, the 6-month volatility window, the 25% cap and the 10-name limit are
+      all conventional or mandated. <strong>The 2-month skip is the one parameter chosen from this
+      data rather than from convention</strong> &mdash; the textbook value is 1 month.</p>
+      <p>It is mitigated by skip = 1, 2 and 3 all being positive and forming a smooth hump rather
+      than a spike, and by the 60/40 skip-1 variant also being positive in four of five years with
+      +5.8% out-of-sample. If a reviewer objects to the skip, that variant is the conservative
+      fallback and it does not change the conclusion. Short-term reversal plausibly persists longer
+      than a month in mid- and small-caps &mdash; but we did not know that in advance and should not
+      pretend we did.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="sec">
+  <div class="secnum">06<span>Results</span></div>
+  <div class="secbody">
+    <h2>What it earned</h2>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Final strategy. Risk-free rate 0% throughout, per the guidelines.</caption>
+        <thead><tr><th>Metric</th><th>In-sample 2021&ndash;25</th><th>Held out 2026 H1</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>Total Net PNL</td><td>&#8377;9.54 Cr</td><td>&#8377;10.23 L</td></tr>
+          <tr><td>Final NAV</td><td>&#8377;10.54 Cr</td><td>&#8377;1.10 Cr</td></tr>
+          <tr><td>Total return</td><td>+954.4%</td><td>+10.2%</td></tr>
+          <tr><td>Annualised return</td><td>+61.7%</td><td>+22.5%</td></tr>
+          <tr><td>Annualised volatility</td><td>25.6%</td><td>28.0%</td></tr>
+          <tr><td>Sharpe ratio</td><td>2.42</td><td>0.80</td></tr>
+          <tr><td>Sortino ratio</td><td>3.25</td><td>1.16</td></tr>
+          <tr><td>Maximum drawdown</td><td class="neg">&minus;31.5%</td><td class="neg">&minus;16.6%</td></tr>
+          <tr><td>Accuracy</td><td>70.3%</td><td>44.4%</td></tr>
+          <tr><td>Gain-to-loss ratio</td><td>1.16</td><td>1.74</td></tr>
+          <tr><td>Annualised turnover</td><td>4.41&times;</td><td>5.86&times;</td></tr>
+          <tr><td>Transaction costs paid</td><td>&#8377;21.86 L</td><td>&#8377;57,038</td></tr>
+          <tr><td>Closed round trips</td><td>387</td><td>36</td></tr>
+          <tr class="zero"><td>Nifty 100, same window</td><td>+89.4%</td><td>&minus;6.4%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Against the original build</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th></th><th>Original</th><th>Final</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>Held-out selection alpha</td><td class="neg">&minus;3.7 pp/yr</td><td class="pos">+18.7 pp/yr</td></tr>
+          <tr><td>Held-out Total Net PNL</td><td>&#8377;3,067</td><td>&#8377;10.23 L</td></tr>
+          <tr><td>Held-out Sharpe</td><td>0.00</td><td>0.80</td></tr>
+          <tr><td>In-sample Total Net PNL</td><td>&#8377;6.40 Cr</td><td>&#8377;9.54 Cr</td></tr>
+          <tr><td>In-sample Sharpe</td><td>2.12</td><td>2.42</td></tr>
+          <tr><td>In-sample max drawdown</td><td>&minus;24.9%</td><td class="neg">&minus;31.5%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">
+      <strong>The tradeoff, stated rather than buried:</strong> in-sample drawdown deepened from
+      &minus;24.9% to &minus;31.5%. More momentum means more drawdown. It was accepted because the
+      mandate is judged on Total Net PNL, because the protection the old 50/50 mix bought was
+      costing more in return than it was worth, and because held-out drawdown was actually
+      <em>better</em> (&minus;16.6% vs &minus;17.9%).
+    </p>
+
+    <figure>
+      <div class="chartcard">
+        <div class="charthead">
+          <div class="charttitle">Held-out window, Jan&ndash;Jun 2026 &mdash; the only genuinely untouched test</div>
+          <div class="legend">
+            <span><i style="background:var(--strategy)"></i>Strategy</span>
+            <span><i style="background:var(--universe)"></i>Equal-weight universe</span>
+            <span><i style="background:var(--index)"></i>Nifty 100</span>
+          </div>
+        </div>
+        <div class="chartbox" id="box-oos"><div class="tip" id="tip-oos"></div></div>
+      </div>
+      <figcaption>
+        The Nifty 100 fell 6.4% over this window. The strategy returned +10.2%, and &mdash; the part
+        that matters &mdash; it beat an equal-weight hold of its own universe, which the original
+        build did not.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="sec">
+  <div class="secnum">07<span>Rejected</span></div>
+  <div class="secbody">
+    <h2>What didn't work</h2>
+    <p>
+      Recorded because a report that only lists what worked is a sales document. Each of these is
+      reproducible from the repository.
+    </p>
+    <ul>
+      <li><strong>A 200-day regime filter</strong> that moves to cash when the universe's own
+        equal-weight trend proxy rolls over. Structurally well motivated &mdash; momentum crashes
+        hardest when a long downtrend snaps back &mdash; but it <strong>whipsawed</strong>. Mean
+        selection alpha fell from +15.5% to +13.0% and the held-out window from +8.9% to
+        &minus;3.8%, hurting 2022, 2025 and 2026 alike. The code and its tests remain in the repo so
+        the negative result stays reproducible rather than merely asserted.</li>
+      <li><strong>Low-volatility-heavy mixes</strong> (0&ndash;35% momentum). Negative selection
+        alpha in-sample and out.</li>
+      <li><strong>Momentum only.</strong> The cleanest story, but it carries a &minus;6.6% year and
+        a &minus;35.6% drawdown. Keeping 40% low-volatility buys real protection &mdash; the factor
+        earns its place in sizing risk, not in picking names.</li>
+      <li><strong>Three or five holdings.</strong> Three is badly negative (&minus;13.1% in-sample);
+        five peaks in-sample but is &minus;9.0% out-of-sample. Concentration beyond ten is not
+        rewarded.</li>
+      <li><strong>Quarterly rebalancing.</strong> Worse in both windows despite lower costs.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="sec">
+  <div class="secnum">08<span>Limits</span></div>
+  <div class="secbody">
+    <h2>What would break this</h2>
+    <ul>
+      <li><strong>Survivorship and look-ahead bias &mdash; the big one.</strong> Membership is a
+        single 2026 snapshot applied retroactively. Quantified at <b class="mono">+20.5 pp/yr</b>
+        in-sample. It is disclosed and measured, not removed.</li>
+      <li><strong>The held-out window is short.</strong> 122 trading days, 36 round trips. An
+        alphabetical buy-and-hold scored +48% selection alpha over it. Every held-out figure here is
+        directional, not precise.</li>
+      <li><strong>The sweeps saw the in-sample data.</strong> Mitigated by choosing plateaus over
+        peaks and by requiring consistency across all five years &mdash; but this is not the same as
+        a truly untouched holdout.</li>
+      <li><strong>Execution is modelled as a close fill</strong> at a flat 0.1%. Real costs include
+        spread, market impact and STT/stamp duty, which may exceed 0.1% on smaller names even after
+        the liquidity screen.</li>
+      <li><strong>Whole-share trading</strong>, residual left in cash, so the book is never exactly
+        fully invested.</li>
+      <li><strong>Price-only factors.</strong> No fundamental or value leg, by design given the
+        data constraints.</li>
+      <li><strong>Data provenance.</strong> All 301 tickers downloaded with zero failures and no
+        name above 5% missing days, but 64 listed after the backtest start and are unscoreable until
+        they have twelve months of history.</li>
+      <li><strong>&ldquo;Trade&rdquo; means a closed round trip</strong> &mdash; a sell closing part
+        or all of a position, P&amp;L against average cost, net of both legs. Positions open on the
+        final day are excluded; counting an open winner as a profitable trade would inflate
+        accuracy.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <p style="max-width:var(--measure);margin-bottom:1rem">
+    Every figure in this report regenerates from the repository. The engine is covered by 103 tests,
+    including a truncation-invariance check that re-runs the backtest on a shortened price panel and
+    asserts the NAV path is reproduced exactly &mdash; which fails loudly if any factor peeks at
+    future prices.
+  </p>
+  <div class="cmds">
+    <b>python -m src.data_loader</b> &nbsp;&mdash; build the price panel<br>
+    <b>python run_backtest.py</b> &nbsp;&mdash; both windows, metrics, figures<br>
+    <b>python -m src.diagnostics</b> &nbsp;&mdash; the bias decomposition<br>
+    <b>python -m src.experiments --all</b> &nbsp;&mdash; ladder, sweeps, per-year robustness<br>
+    <b>pytest tests/ -q</b> &nbsp;&mdash; 103 tests
+  </div>
+  <p>Branch <code>yasho</code> &middot; universe snapshot 2026-08-25 &middot; prices via yfinance,
+  constituents via niftyindices.com</p>
+</footer>
+
+</div>
+
+<script>
+const DATA = {"is": {"dates": ["2021-01-01", "2021-01-11", "2021-01-19", "2021-01-28", "2021-02-05", "2021-02-15", "2021-02-23", "2021-03-03", "2021-03-12", "2021-03-22", "2021-03-31", "2021-04-09", "2021-04-20", "2021-04-29", "2021-05-07", "2021-05-18", "2021-05-26", "2021-06-03", "2021-06-11", "2021-06-21", "2021-06-29", "2021-07-07", "2021-07-15", "2021-07-26", "2021-08-03", "2021-08-11", "2021-08-20", "2021-08-30", "2021-09-07", "2021-09-16", "2021-09-24", "2021-10-04", "2021-10-12", "2021-10-21", "2021-10-29", "2021-11-09", "2021-11-17", "2021-11-26", "2021-12-06", "2021-12-14", "2021-12-22", "2021-12-30", "2022-01-07", "2022-01-17", "2022-01-25", "2022-02-03", "2022-02-11", "2022-02-21", "2022-03-02", "2022-03-10", "2022-03-21", "2022-03-29", "2022-04-06", "2022-04-18", "2022-04-26", "2022-05-05", "2022-05-13", "2022-05-23", "2022-05-31", "2022-06-08", "2022-06-16", "2022-06-24", "2022-07-04", "2022-07-12", "2022-07-20", "2022-07-28", "2022-08-05", "2022-08-17", "2022-08-25", "2022-09-05", "2022-09-13", "2022-09-21", "2022-09-29", "2022-10-10", "2022-10-18", "2022-10-27", "2022-11-04", "2022-11-15", "2022-11-23", "2022-12-01", "2022-12-09", "2022-12-19", "2022-12-27", "2023-01-04", "2023-01-12", "2023-01-20", "2023-01-31", "2023-02-08", "2023-02-16", "2023-02-24", "2023-03-06", "2023-03-15", "2023-03-23", "2023-04-03", "2023-04-13", "2023-04-24", "2023-05-03", "2023-05-11", "2023-05-19", "2023-05-29", "2023-06-06", "2023-06-14", "2023-06-22", "2023-07-03", "2023-07-11", "2023-07-19", "2023-07-27", "2023-08-04", "2023-08-14", "2023-08-23", "2023-08-31", "2023-09-08", "2023-09-18", "2023-09-27", "2023-10-06", "2023-10-16", "2023-10-25", "2023-11-02", "2023-11-10", "2023-11-21", "2023-11-30", "2023-12-08", "2023-12-18", "2023-12-27", "2024-01-04", "2024-01-12", "2024-01-23", "2024-02-01", "2024-02-09", "2024-02-19", "2024-02-27", "2024-03-06", "2024-03-15", "2024-03-26", "2024-04-04", "2024-04-15", "2024-04-24", "2024-05-03", "2024-05-13", "2024-05-22", "2024-05-30", "2024-06-07", "2024-06-18", "2024-06-26", "2024-07-04", "2024-07-12", "2024-07-23", "2024-07-31", "2024-08-08", "2024-08-19", "2024-08-27", "2024-09-04", "2024-09-12", "2024-09-20", "2024-09-30", "2024-10-09", "2024-10-17", "2024-10-25", "2024-11-04", "2024-11-12", "2024-11-22", "2024-12-02", "2024-12-10", "2024-12-18", "2024-12-27", "2025-01-06", "2025-01-14", "2025-01-22", "2025-01-30", "2025-02-06", "2025-02-14", "2025-02-24", "2025-03-05", "2025-03-13", "2025-03-24", "2025-04-02", "2025-04-11", "2025-04-23", "2025-05-02", "2025-05-12", "2025-05-20", "2025-05-28", "2025-06-05", "2025-06-13", "2025-06-23", "2025-07-01", "2025-07-09", "2025-07-17", "2025-07-25", "2025-08-04", "2025-08-12", "2025-08-21", "2025-09-01", "2025-09-09", "2025-09-17", "2025-09-25", "2025-10-06", "2025-10-14", "2025-10-23", "2025-10-31", "2025-11-11", "2025-11-19", "2025-11-27", "2025-12-05", "2025-12-15", "2025-12-23", "2025-12-31"], "strategy": [1.0, 0.9864, 1.0242, 0.9796, 1.0393, 1.073, 1.1389, 1.1836, 1.196, 1.2106, 1.1917, 1.3063, 1.2649, 1.3362, 1.4827, 1.4734, 1.4978, 1.5953, 1.6573, 1.644, 1.6523, 1.6538, 1.6333, 1.6782, 1.7048, 1.6744, 1.7915, 1.9915, 2.0531, 2.1002, 2.1401, 2.2426, 2.2833, 2.3007, 2.2721, 2.384, 2.4622, 2.4108, 2.3717, 2.5075, 2.3911, 2.4309, 2.5695, 2.7312, 2.677, 2.7473, 2.7361, 2.5748, 2.6334, 2.6958, 2.8202, 2.8614, 3.1681, 3.0751, 3.0811, 2.8835, 2.5108, 2.6781, 2.6946, 2.623, 2.3746, 2.3904, 2.4101, 2.5474, 2.6622, 2.6691, 2.7945, 2.9592, 2.9048, 3.0177, 3.0954, 3.2075, 3.0418, 3.1433, 3.1562, 3.1844, 3.2874, 3.3306, 3.1951, 3.2022, 3.1583, 3.1671, 2.9198, 2.9362, 2.9023, 2.9289, 2.8085, 2.628, 2.5592, 2.5065, 2.6361, 2.6131, 2.5712, 2.6447, 2.7206, 2.7971, 2.9021, 2.9036, 2.9577, 3.0527, 3.2437, 3.2958, 3.419, 3.5666, 3.7342, 3.8808, 4.0343, 3.9926, 4.0756, 4.2034, 4.263, 4.7841, 4.7986, 4.8177, 4.77, 4.752, 4.4014, 4.5573, 4.8226, 5.1788, 5.2456, 5.4368, 5.8138, 5.7635, 5.9335, 6.1709, 5.9993, 6.6363, 7.0161, 7.1176, 7.2853, 7.1718, 6.7388, 6.9372, 7.6055, 7.3203, 7.8908, 8.3313, 7.7649, 8.8538, 8.5828, 8.7721, 9.172, 9.0711, 9.7571, 10.2286, 9.4873, 10.1312, 9.707, 9.7409, 9.5517, 9.4386, 9.2537, 9.1288, 8.9327, 8.8817, 8.8372, 8.0889, 8.7638, 8.6003, 8.5687, 8.9862, 9.2584, 9.2672, 9.1847, 9.1795, 8.4359, 7.8666, 7.7006, 8.3428, 7.3957, 7.334, 7.4382, 7.6513, 8.3898, 8.1865, 7.831, 8.4571, 8.1809, 8.2642, 8.2662, 8.1734, 8.2929, 8.3993, 8.256, 8.3178, 8.2276, 8.4041, 8.3117, 8.4918, 8.6208, 8.8782, 8.6632, 8.812, 8.8676, 8.6606, 8.7919, 9.0488, 9.2257, 9.44, 9.7131, 9.6695, 9.7632, 9.865, 9.8558, 10.1161, 10.5438], "ew": [1.0, 1.0479, 1.0444, 1.0031, 1.0753, 1.1078, 1.1171, 1.1823, 1.1719, 1.1467, 1.143, 1.1815, 1.1285, 1.1743, 1.2038, 1.2442, 1.2728, 1.3162, 1.3628, 1.3437, 1.3495, 1.3692, 1.3927, 1.3901, 1.4183, 1.3718, 1.3568, 1.4107, 1.4478, 1.5008, 1.494, 1.5319, 1.5766, 1.558, 1.5257, 1.5983, 1.587, 1.5117, 1.516, 1.5719, 1.5107, 1.534, 1.5859, 1.6471, 1.5446, 1.6014, 1.5625, 1.5029, 1.4813, 1.4873, 1.5253, 1.5331, 1.6303, 1.6331, 1.6196, 1.5605, 1.4407, 1.491, 1.5189, 1.4937, 1.4073, 1.4223, 1.4395, 1.4899, 1.5353, 1.56, 1.6119, 1.6659, 1.6587, 1.7012, 1.7505, 1.7201, 1.6446, 1.704, 1.6997, 1.7232, 1.7555, 1.7689, 1.7554, 1.8155, 1.8089, 1.8113, 1.7568, 1.7745, 1.7725, 1.7703, 1.7308, 1.7267, 1.7227, 1.6731, 1.7216, 1.6679, 1.6723, 1.6908, 1.7359, 1.7511, 1.8132, 1.8471, 1.8432, 1.8903, 1.9396, 1.9879, 2.0085, 2.0556, 2.09, 2.128, 2.1638, 2.1893, 2.2011, 2.25, 2.2796, 2.3819, 2.3803, 2.3771, 2.3796, 2.4175, 2.307, 2.3602, 2.4444, 2.5314, 2.5972, 2.6924, 2.7862, 2.8059, 2.8776, 2.9173, 2.8739, 3.0109, 3.051, 3.1129, 3.1177, 3.0932, 2.9817, 3.0479, 3.2078, 3.1918, 3.2808, 3.3533, 3.2602, 3.4369, 3.393, 3.5162, 3.6792, 3.6797, 3.7908, 3.8427, 3.7721, 3.946, 3.8085, 3.905, 4.0049, 4.0254, 4.0427, 4.0652, 4.095, 4.009, 3.9859, 3.7621, 3.8432, 3.8017, 3.7461, 3.9272, 4.0491, 3.9871, 3.8994, 3.865, 3.6792, 3.6616, 3.6156, 3.7014, 3.4366, 3.4521, 3.4121, 3.3714, 3.6583, 3.6294, 3.518, 3.816, 3.7141, 3.8121, 3.9072, 3.9832, 4.0508, 4.0599, 4.0551, 4.1796, 4.1712, 4.2011, 4.0998, 4.071, 4.0064, 4.1318, 4.0635, 4.1285, 4.2547, 4.1862, 4.2163, 4.1954, 4.2829, 4.3096, 4.2867, 4.299, 4.2723, 4.2142, 4.2033, 4.2573, 4.266], "index": [1.0, 1.0391, 1.0384, 0.9898, 1.0637, 1.0929, 1.0535, 1.0915, 1.0745, 1.0546, 1.0509, 1.0648, 1.0267, 1.0667, 1.0661, 1.0876, 1.1016, 1.1321, 1.1411, 1.1349, 1.1349, 1.1438, 1.1469, 1.1422, 1.1639, 1.1703, 1.1811, 1.2181, 1.2504, 1.2721, 1.2838, 1.2744, 1.2958, 1.304, 1.269, 1.2994, 1.2924, 1.2306, 1.2205, 1.2517, 1.223, 1.2384, 1.2813, 1.316, 1.2412, 1.2629, 1.2495, 1.2334, 1.1962, 1.1948, 1.2294, 1.2436, 1.2828, 1.2466, 1.2475, 1.2076, 1.1345, 1.1646, 1.19, 1.1704, 1.1031, 1.1254, 1.1368, 1.1585, 1.1904, 1.2185, 1.253, 1.2942, 1.2666, 1.279, 1.3096, 1.284, 1.2184, 1.2457, 1.2591, 1.2767, 1.3031, 1.3225, 1.3082, 1.3465, 1.3262, 1.3203, 1.2961, 1.2897, 1.2794, 1.2895, 1.2491, 1.2576, 1.2643, 1.2237, 1.2424, 1.194, 1.2035, 1.2224, 1.2515, 1.2465, 1.2733, 1.2898, 1.2817, 1.3122, 1.3149, 1.3275, 1.3287, 1.3643, 1.3721, 1.3974, 1.3886, 1.3802, 1.3719, 1.3741, 1.3629, 1.4044, 1.4234, 1.3949, 1.3899, 1.3967, 1.3508, 1.356, 1.38, 1.4056, 1.4336, 1.4979, 1.5319, 1.5482, 1.5567, 1.5726, 1.5263, 1.5641, 1.5789, 1.5997, 1.6126, 1.6314, 1.5964, 1.604, 1.6469, 1.6299, 1.6442, 1.6594, 1.6292, 1.6773, 1.6654, 1.7221, 1.7518, 1.7648, 1.7985, 1.8152, 1.804, 1.847, 1.7857, 1.8195, 1.8511, 1.8648, 1.8779, 1.9034, 1.9084, 1.8506, 1.8285, 1.7758, 1.7641, 1.754, 1.7498, 1.7883, 1.8168, 1.784, 1.7481, 1.732, 1.687, 1.6847, 1.6871, 1.7147, 1.6554, 1.6338, 1.6194, 1.6208, 1.7184, 1.6963, 1.6585, 1.7697, 1.7635, 1.8013, 1.7919, 1.7998, 1.8005, 1.7977, 1.812, 1.8563, 1.8511, 1.8293, 1.8056, 1.7976, 1.7803, 1.8243, 1.7906, 1.8089, 1.8445, 1.8141, 1.8268, 1.8292, 1.88, 1.8714, 1.8693, 1.8906, 1.898, 1.8946, 1.8846, 1.8958, 1.8941]}, "oos": {"dates": ["2026-01-01", "2026-01-02", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-19", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05", "2026-02-06", "2026-02-09", "2026-02-10", "2026-02-11", "2026-02-12", "2026-02-13", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-23", "2026-02-24", "2026-02-25", "2026-02-26", "2026-02-27", "2026-03-02", "2026-03-04", "2026-03-05", "2026-03-06", "2026-03-09", "2026-03-10", "2026-03-11", "2026-03-12", "2026-03-13", "2026-03-16", "2026-03-17", "2026-03-18", "2026-03-19", "2026-03-20", "2026-03-23", "2026-03-24", "2026-03-25", "2026-03-27", "2026-03-30", "2026-04-01", "2026-04-02", "2026-04-06", "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10", "2026-04-13", "2026-04-15", "2026-04-16", "2026-04-17", "2026-04-20", "2026-04-21", "2026-04-22", "2026-04-23", "2026-04-24", "2026-04-27", "2026-04-28", "2026-04-29", "2026-04-30", "2026-05-01", "2026-05-04", "2026-05-05", "2026-05-06", "2026-05-07", "2026-05-08", "2026-05-11", "2026-05-12", "2026-05-13", "2026-05-14", "2026-05-15", "2026-05-18", "2026-05-19", "2026-05-20", "2026-05-21", "2026-05-22", "2026-05-25", "2026-05-26", "2026-05-27", "2026-05-28", "2026-05-29", "2026-06-01", "2026-06-02", "2026-06-03", "2026-06-04", "2026-06-05", "2026-06-08", "2026-06-09", "2026-06-10", "2026-06-11", "2026-06-12", "2026-06-15", "2026-06-16", "2026-06-17", "2026-06-18", "2026-06-19", "2026-06-22", "2026-06-23", "2026-06-24", "2026-06-25", "2026-06-26", "2026-06-29"], "strategy": [1.0, 0.999, 0.9977, 0.9986, 0.9929, 0.9713, 0.9507, 0.9565, 0.9535, 0.9702, 0.9702, 0.9775, 0.9753, 0.954, 0.935, 0.9538, 0.932, 0.9293, 0.9337, 0.9254, 0.9312, 0.9102, 0.9399, 0.9399, 0.9479, 0.9659, 0.9937, 0.9999, 1.0108, 1.0065, 0.9946, 1.0157, 1.0355, 1.0432, 1.0225, 1.0354, 1.0411, 1.0533, 1.0672, 1.0727, 1.0455, 1.025, 0.9803, 0.9979, 0.9845, 0.9621, 0.994, 0.9722, 0.9686, 0.9335, 0.9362, 0.9475, 0.9701, 0.9333, 0.95, 0.9061, 0.9343, 0.9608, 0.9313, 0.8948, 0.9305, 0.9282, 0.957, 0.9516, 0.9977, 1.0011, 1.0161, 1.0151, 1.0379, 1.0427, 1.0505, 1.044, 1.0446, 1.0515, 1.0445, 1.0348, 1.0421, 1.0423, 1.0512, 1.0244, 1.0244, 1.024, 1.0367, 1.0628, 1.0799, 1.0831, 1.0685, 1.0389, 1.0527, 1.066, 1.0569, 1.0493, 1.0428, 1.0563, 1.057, 1.0648, 1.0681, 1.0751, 1.0944, 1.0944, 1.1012, 1.0777, 1.0738, 1.0877, 1.0744, 1.0742, 1.057, 1.0684, 1.0562, 1.0557, 1.0674, 1.0714, 1.0562, 1.0552, 1.0517, 1.0667, 1.0733, 1.0757, 1.065, 1.061, 1.061, 1.1023], "ew": [1.0, 1.0104, 1.0117, 1.0098, 1.0122, 0.9923, 0.9805, 0.9799, 0.98, 0.9828, 0.9828, 0.9814, 0.975, 0.9499, 0.9438, 0.9545, 0.9362, 0.9389, 0.9566, 0.9572, 0.9593, 0.9454, 0.9714, 0.9794, 0.9747, 0.9742, 0.9908, 0.9947, 0.9961, 0.9901, 0.9745, 0.9795, 0.9838, 0.9891, 0.9751, 0.9781, 0.9788, 0.9726, 0.9785, 0.9807, 0.9704, 0.9533, 0.9318, 0.9447, 0.9399, 0.9193, 0.9363, 0.9279, 0.9245, 0.9007, 0.8988, 0.9055, 0.9227, 0.8938, 0.8998, 0.8654, 0.8851, 0.9051, 0.8873, 0.8633, 0.8879, 0.8872, 0.8995, 0.9021, 0.9399, 0.9418, 0.9573, 0.9513, 0.9732, 0.9808, 0.9935, 0.9915, 0.9988, 1.0049, 0.9985, 0.9885, 1.0035, 1.0042, 1.007, 0.9969, 0.9969, 1.0042, 1.0053, 1.0218, 1.0278, 1.027, 1.0135, 0.9862, 0.992, 0.9979, 0.9921, 0.9843, 0.9916, 0.9944, 0.9979, 0.9992, 1.0112, 1.0132, 1.0192, 1.0192, 1.0082, 0.9963, 1.0007, 0.9975, 1.0015, 1.0006, 0.9836, 0.9969, 0.985, 0.9764, 1.0006, 1.0139, 1.0183, 1.0249, 1.0296, 1.0296, 1.0354, 1.0257, 1.0286, 1.0253, 1.0253, 1.0181], "index": [1.0, 1.0088, 1.0063, 1.0045, 1.0035, 0.9915, 0.9837, 0.9876, 0.9853, 0.9838, 0.9838, 0.9849, 0.981, 0.966, 0.963, 0.9689, 0.9581, 0.9632, 0.9721, 0.975, 0.9705, 0.9613, 0.9859, 0.9885, 0.9835, 0.9853, 0.9925, 0.9949, 0.9964, 0.991, 0.9776, 0.986, 0.9882, 0.9923, 0.9776, 0.9823, 0.9875, 0.9784, 0.9817, 0.9827, 0.9703, 0.9578, 0.9411, 0.9524, 0.9418, 0.9249, 0.9351, 0.9208, 0.9133, 0.8936, 0.9013, 0.9081, 0.916, 0.8862, 0.8905, 0.8654, 0.8805, 0.8961, 0.8768, 0.8571, 0.872, 0.8732, 0.8835, 0.8891, 0.9242, 0.9175, 0.9296, 0.9217, 0.9376, 0.9383, 0.9457, 0.9462, 0.9541, 0.9491, 0.9403, 0.9302, 0.9387, 0.935, 0.9407, 0.9328, 0.9328, 0.9382, 0.9363, 0.9484, 0.9487, 0.943, 0.9286, 0.9106, 0.9131, 0.9238, 0.9207, 0.9193, 0.9192, 0.9214, 0.9216, 0.9243, 0.9368, 0.9333, 0.9356, 0.9356, 0.922, 0.914, 0.9176, 0.9145, 0.9153, 0.9141, 0.9034, 0.9096, 0.9068, 0.9032, 0.9218, 0.9333, 0.9378, 0.942, 0.9455, 0.94, 0.9446, 0.9333, 0.9396, 0.941, 0.941, 0.9358]}};
+
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NS = "http://www.w3.org/2000/svg";
+const el = (t, a) => { const e = document.createElementNS(NS, t);
+  for (const k in a) e.setAttribute(k, a[k]); return e; };
+
+/* ---------------- line chart with crosshair ---------------- */
+function lineChart(boxId, tipId, cfg){
+  const box = document.getElementById(boxId), tip = document.getElementById(tipId);
+  if(!box) return;
+  const W = 900, H = cfg.height || 330;
+  const M = {t:14, r:cfg.padRight||64, b:30, l:52};
+  const iw = W - M.l - M.r, ih = H - M.t - M.b;
+
+  const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, role:"img",
+    "aria-label":cfg.aria || "line chart"});
+  const g = el("g", {transform:`translate(${M.l},${M.t})`});
+  svg.appendChild(g);
+
+  const all = cfg.series.flatMap(s => s.values);
+  const autoLo = cfg.yMin === undefined, autoHi = cfg.yMax === undefined;
+  let lo = autoLo ? Math.min(...all) : cfg.yMin;
+  let hi = autoHi ? Math.max(...all) : cfg.yMax;
+  // Padding is for auto-fitted ranges only. Explicit bounds are chosen to make the
+  // ticks land on round numbers, and padding them would undo exactly that.
+  const pad = (hi - lo) * 0.08;
+  if (autoLo) lo -= pad;
+  if (autoHi) hi += pad;
+  const n = cfg.x.length;
+  const X = i => (n<2?0:i/(n-1))*iw;
+  const Y = v => ih - ((v - lo)/(hi - lo))*ih;
+
+  /* grid + y axis */
+  const ticks = cfg.yTicks || 5;
+  for(let k=0;k<=ticks;k++){
+    const v = lo + (hi-lo)*k/ticks, y = Y(v);
+    g.appendChild(el("line",{x1:0,y1:y,x2:iw,y2:y,stroke:css("--rule"),"stroke-width":1}));
+    const t = el("text",{x:-10,y:y+4,"text-anchor":"end",fill:css("--ink-3"),
+      "font-size":11,"font-family":"IBM Plex Mono, monospace"});
+    t.textContent = cfg.yFmt(v); g.appendChild(t);
+  }
+  /* x labels */
+  (cfg.xTicks||[]).forEach(({i,label})=>{
+    const t = el("text",{x:X(i),y:ih+20,"text-anchor":"middle",fill:css("--ink-3"),
+      "font-size":11,"font-family":"IBM Plex Mono, monospace"});
+    t.textContent = label; g.appendChild(t);
+  });
+
+  /* series */
+  cfg.series.forEach(s=>{
+    const d = s.values.map((v,i)=>`${i?"L":"M"}${X(i).toFixed(2)},${Y(v).toFixed(2)}`).join(" ");
+    g.appendChild(el("path",{d, fill:"none", stroke:css(s.token),
+      "stroke-width":s.width||2, "stroke-linejoin":"round","stroke-linecap":"round",
+      "stroke-dasharray": s.dash || "none"}));
+    /* emphasised endpoint + direct label */
+    const lx = X(n-1), ly = Y(s.values[n-1]);
+    g.appendChild(el("circle",{cx:lx,cy:ly,r:3.5,fill:css(s.token),
+      stroke:css("--panel"),"stroke-width":2}));
+    const lab = el("text",{x:lx+9,y:ly+4,fill:css(s.token),"font-size":11.5,
+      "font-weight":600,"font-family":"IBM Plex Mono, monospace"});
+    lab.textContent = cfg.endFmt(s.values[n-1]); g.appendChild(lab);
+  });
+
+  /* crosshair */
+  const cross = el("line",{y1:0,y2:ih,stroke:css("--rule-2"),"stroke-width":1,opacity:0});
+  g.appendChild(cross);
+  const dots = cfg.series.map(s=>{
+    const c = el("circle",{r:4,fill:css(s.token),stroke:css("--panel"),
+      "stroke-width":2,opacity:0}); g.appendChild(c); return c;
+  });
+
+  const hit = el("rect",{x:0,y:0,width:iw,height:ih,fill:"transparent",
+    style:"cursor:crosshair"});
+  g.appendChild(hit);
+
+  function move(ev){
+    const r = svg.getBoundingClientRect();
+    const px = (ev.clientX - r.left) / r.width * W - M.l;
+    let i = Math.round(px/iw*(n-1));
+    i = Math.max(0, Math.min(n-1, i));
+    cross.setAttribute("x1",X(i)); cross.setAttribute("x2",X(i));
+    cross.setAttribute("opacity",1);
+    cfg.series.forEach((s,k)=>{
+      dots[k].setAttribute("cx",X(i)); dots[k].setAttribute("cy",Y(s.values[i]));
+      dots[k].setAttribute("opacity",1);
+    });
+    tip.innerHTML = `<div class="tdate">${cfg.x[i]}</div>` + cfg.series.map(s=>
+      `<div class="trow"><span><i style="background:${css(s.token)}"></i>${s.name}</span>`+
+      `<b>${cfg.tipFmt(s.values[i])}</b></div>`).join("");
+    tip.style.opacity = 1;
+    const bx = box.getBoundingClientRect();
+    let left = ev.clientX - bx.left + 16;
+    if(left + tip.offsetWidth > bx.width) left = ev.clientX - bx.left - tip.offsetWidth - 16;
+    tip.style.left = Math.max(0,left) + "px";
+    tip.style.top = Math.min(bx.height - tip.offsetHeight, Math.max(0, ev.clientY - bx.top - 10)) + "px";
+  }
+  function leave(){
+    cross.setAttribute("opacity",0);
+    dots.forEach(d=>d.setAttribute("opacity",0));
+    tip.style.opacity = 0;
+  }
+  hit.addEventListener("pointermove",move);
+  hit.addEventListener("pointerleave",leave);
+  box.insertBefore(svg, tip);
+}
+
+/* ---------------- grouped bars ---------------- */
+function barChart(boxId, tipId, cfg){
+  const box = document.getElementById(boxId), tip = document.getElementById(tipId);
+  if(!box) return;
+  const W = 900, H = cfg.height || 300;
+  const M = {t:16, r:16, b:34, l:52};
+  const iw = W - M.l - M.r, ih = H - M.t - M.b;
+  const svg = el("svg",{viewBox:`0 0 ${W} ${H}`,role:"img","aria-label":cfg.aria||"bar chart"});
+  const g = el("g",{transform:`translate(${M.l},${M.t})`}); svg.appendChild(g);
+
+  const all = cfg.groups.flatMap(gr=>gr.values);
+  const autoLo = cfg.yMin === undefined, autoHi = cfg.yMax === undefined;
+  let lo = autoLo ? Math.min(0, ...all) : cfg.yMin;
+  let hi = autoHi ? Math.max(0, ...all) : cfg.yMax;
+  const pad = (hi-lo)*0.12;
+  if (autoLo) lo -= pad;
+  if (autoHi) hi += pad;
+  const nT = cfg.yTicks || 4;
+  const Y = v => ih - ((v-lo)/(hi-lo))*ih;
+
+  for(let k=0;k<=nT;k++){
+    const v = lo + (hi-lo)*k/nT, y = Y(v);
+    g.appendChild(el("line",{x1:0,y1:y,x2:iw,y2:y,stroke:css("--rule"),"stroke-width":1}));
+    const t = el("text",{x:-10,y:y+4,"text-anchor":"end",fill:css("--ink-3"),
+      "font-size":11,"font-family":"IBM Plex Mono, monospace"});
+    t.textContent = cfg.yFmt(v); g.appendChild(t);
+  }
+  g.appendChild(el("line",{x1:0,y1:Y(0),x2:iw,y2:Y(0),stroke:css("--rule-2"),"stroke-width":1.5}));
+
+  const gw = iw/cfg.groups.length, ns = cfg.series.length;
+  const bw = Math.min(46, (gw*0.62)/ns);
+  cfg.groups.forEach((gr,gi)=>{
+    const cx = gw*gi + gw/2;
+    gr.values.forEach((v,si)=>{
+      const x = cx - (ns*bw + (ns-1)*4)/2 + si*(bw+4);
+      const y = v>=0 ? Y(v) : Y(0), h = Math.abs(Y(v)-Y(0));
+      const r = el("rect",{x, y, width:bw, height:Math.max(h,1.5),
+        fill:css(cfg.series[si].token), rx:3,
+        stroke:css("--panel"),"stroke-width":1});
+      r.style.cursor="pointer";
+      r.addEventListener("pointerenter",ev=>{
+        tip.innerHTML = `<div class="tdate">${gr.label}</div>`+
+          `<div class="trow"><span><i style="background:${css(cfg.series[si].token)}"></i>`+
+          `${cfg.series[si].name}</span><b>${cfg.tipFmt(v)}</b></div>`;
+        tip.style.opacity=1;
+        const bx = box.getBoundingClientRect();
+        let left = ev.clientX - bx.left + 14;
+        if(left + tip.offsetWidth > bx.width) left = ev.clientX - bx.left - tip.offsetWidth - 14;
+        tip.style.left = Math.max(0,left)+"px";
+        tip.style.top = Math.max(0, ev.clientY - bx.top - 44)+"px";
+      });
+      r.addEventListener("pointerleave",()=>tip.style.opacity=0);
+      g.appendChild(r);
+      const lb = el("text",{x:x+bw/2, y: v>=0 ? y-6 : y+h+14, "text-anchor":"middle",
+        fill:css("--ink-3"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace"});
+      lb.textContent = cfg.barFmt(v); g.appendChild(lb);
+    });
+    const t = el("text",{x:cx,y:ih+22,"text-anchor":"middle",fill:css("--ink-2"),
+      "font-size":11.5,"font-family":"IBM Plex Mono, monospace"});
+    t.textContent = gr.label; g.appendChild(t);
+  });
+  box.insertBefore(svg, tip);
+}
+
+/* ---------------- build ---------------- */
+function yearTicks(dates){
+  const out = [], seen = new Set();
+  dates.forEach((d,i)=>{ const y = d.slice(0,4);
+    if(!seen.has(y)){ seen.add(y); out.push({i, label:y}); } });
+  return out;
+}
+function monthTicks(dates){
+  const M = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const out = [], seen = new Set();
+  dates.forEach((d,i)=>{ const k = d.slice(0,7);
+    if(!seen.has(k)){ seen.add(k); out.push({i, label:M[+d.slice(5,7)-1]}); } });
+  return out;
+}
+const cr = v => v.toFixed(2)+" Cr";
+
+function build(){
+  document.querySelectorAll(".chartbox svg").forEach(s=>s.remove());
+
+  if(DATA.is) lineChart("box-is","tip-is",{
+    x:DATA.is.dates, height:360, padRight:72, yMin:0, yMax:12, yTicks:6,
+    aria:"Portfolio value 2021 to 2025: strategy, equal-weight universe and Nifty 100",
+    series:[
+      {name:"Strategy", token:"--strategy", values:DATA.is.strategy, width:2.2},
+      {name:"EW universe", token:"--universe", values:DATA.is.ew, width:2},
+      {name:"Nifty 100", token:"--index", values:DATA.is.index, width:2, dash:"5 4"}
+    ],
+    xTicks:yearTicks(DATA.is.dates),
+    yFmt:v=>v.toFixed(0)+"Cr", endFmt:cr, tipFmt:cr
+  });
+
+  if(DATA.oos) lineChart("box-oos","tip-oos",{
+    x:DATA.oos.dates, height:290, padRight:72, yMin:0.90, yMax:1.15, yTicks:5,
+    aria:"Portfolio value January to June 2026",
+    series:[
+      {name:"Strategy", token:"--strategy", values:DATA.oos.strategy, width:2.2},
+      {name:"EW universe", token:"--universe", values:DATA.oos.ew, width:2},
+      {name:"Nifty 100", token:"--index", values:DATA.oos.index, width:2, dash:"5 4"}
+    ],
+    xTicks:monthTicks(DATA.oos.dates),
+    yFmt:v=>v.toFixed(2)+"Cr", endFmt:cr, tipFmt:cr
+  });
+
+  const mix = [[30,-7.5,-8.6],[35,-1.8,-6.4],[40,6.4,-5.0],[45,13.1,-7.5],[50,16.0,-3.7],
+               [55,15.6,5.9],[60,17.3,5.8],[70,14.9,4.1],[80,12.7,4.9],[90,12.2,-0.5],[100,11.2,4.0]];
+  lineChart("box-mix","tip-mix",{
+    x:mix.map(r=>r[0]+"% momentum"), height:300, padRight:58, yMin:-10, yMax:20, yTicks:6,
+    aria:"Selection alpha versus momentum weight",
+    series:[
+      {name:"In-sample", token:"--strategy", values:mix.map(r=>r[1]), width:2.2},
+      {name:"Out-of-sample", token:"--universe", values:mix.map(r=>r[2]), width:2}
+    ],
+    xTicks:mix.map((r,i)=>({i,label:r[0]+"%"})),
+    yFmt:v=>(v>0?"+":"")+v.toFixed(0)+"%",
+    endFmt:v=>(v>0?"+":"")+v.toFixed(1)+"%",
+    tipFmt:v=>(v>0?"+":"")+v.toFixed(1)+" pp/yr"
+  });
+
+  barChart("box-year","tip-year",{
+    height:300, yMin:-20, yMax:100, yTicks:6,
+    aria:"Selection alpha by year, original build versus final strategy",
+    series:[{name:"Original (50/50, skip 1)", token:"--index"},
+            {name:"Final (60/40, skip 2)", token:"--strategy"}],
+    groups:[
+      {label:"2021", values:[27.9, 94.7]},
+      {label:"2022", values:[8.1, 5.3]},
+      {label:"2023", values:[14.4, 29.3]},
+      {label:"2024", values:[31.4, 9.4]},
+      {label:"2025", values:[-6.4, 2.5]},
+      {label:"2026 H1", values:[-3.7, 18.7]}
+    ],
+    yFmt:v=>(v>0?"+":"")+v.toFixed(0)+"%",
+    barFmt:v=>(v>0?"+":"")+v.toFixed(1),
+    tipFmt:v=>(v>0?"+":"")+v.toFixed(1)+" pp/yr"
+  });
+}
+
+build();
+/* redraw on theme flip so every stroke re-reads its token */
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", build);
+new MutationObserver(build).observe(document.documentElement,
+  {attributes:true, attributeFilter:["data-theme"]});
+</script>

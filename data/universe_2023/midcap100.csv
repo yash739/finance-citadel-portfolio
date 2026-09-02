@@ -1,0 +1,104 @@
+# Nifty Midcap 100 constituents
+# Snapshot date: 2023-08-06 (Internet Archive)
+# Source: https://web.archive.org/web/20230806051003/https://niftyindices.com/IndexConstituent/ind_niftymidcap100list.csv
+ticker,name,sector,index
+ABBOTINDIA.NS,Abbott India Ltd.,Healthcare,Nifty Midcap 100
+ABCAPITAL.NS,Aditya Birla Capital Ltd.,Financial Services,Nifty Midcap 100
+ABFRL.NS,Aditya Birla Fashion and Retail Ltd.,Consumer Services,Nifty Midcap 100
+ADANIPOWER.NS,Adani Power Ltd.,Power,Nifty Midcap 100
+ALKEM.NS,Alkem Laboratories Ltd.,Healthcare,Nifty Midcap 100
+APOLLOTYRE.NS,Apollo Tyres Ltd.,Automobile and Auto Components,Nifty Midcap 100
+ASHOKLEY.NS,Ashok Leyland Ltd.,Capital Goods,Nifty Midcap 100
+ASTRAL.NS,Astral Ltd.,Capital Goods,Nifty Midcap 100
+AUBANK.NS,AU Small Finance Bank Ltd.,Financial Services,Nifty Midcap 100
+AUROPHARMA.NS,Aurobindo Pharma Ltd.,Healthcare,Nifty Midcap 100
+BALKRISIND.NS,Balkrishna Industries Ltd.,Automobile and Auto Components,Nifty Midcap 100
+BANDHANBNK.NS,Bandhan Bank Ltd.,Financial Services,Nifty Midcap 100
+BANKINDIA.NS,Bank of India,Financial Services,Nifty Midcap 100
+BATAINDIA.NS,Bata India Ltd.,Consumer Durables,Nifty Midcap 100
+BHARATFORG.NS,Bharat Forge Ltd.,Capital Goods,Nifty Midcap 100
+BHEL.NS,Bharat Heavy Electricals Ltd.,Capital Goods,Nifty Midcap 100
+BIOCON.NS,Biocon Ltd.,Healthcare,Nifty Midcap 100
+CGPOWER.NS,CG Power and Industrial Solutions Ltd.,Capital Goods,Nifty Midcap 100
+COFORGE.NS,Coforge Ltd.,Information Technology,Nifty Midcap 100
+CONCOR.NS,Container Corporation of India Ltd.,Services,Nifty Midcap 100
+COROMANDEL.NS,Coromandel International Ltd.,Chemicals,Nifty Midcap 100
+CROMPTON.NS,Crompton Greaves Consumer Electricals Ltd.,Consumer Durables,Nifty Midcap 100
+CUMMINSIND.NS,Cummins India Ltd.,Capital Goods,Nifty Midcap 100
+DALBHARAT.NS,Dalmia Bharat Ltd.,Construction Materials,Nifty Midcap 100
+DEEPAKNTR.NS,Deepak Nitrite Ltd.,Chemicals,Nifty Midcap 100
+DELHIVERY.NS,Delhivery Ltd.,Services,Nifty Midcap 100
+DEVYANI.NS,Devyani International Ltd.,Consumer Services,Nifty Midcap 100
+DIXON.NS,Dixon Technologies (India) Ltd.,Consumer Durables,Nifty Midcap 100
+ESCORTS.NS,Escorts Kubota Ltd.,Capital Goods,Nifty Midcap 100
+FEDERALBNK.NS,Federal Bank Ltd.,Financial Services,Nifty Midcap 100
+FLUOROCHEM.NS,Gujarat Fluorochemicals Ltd.,Chemicals,Nifty Midcap 100
+FORTIS.NS,Fortis Healthcare Ltd.,Healthcare,Nifty Midcap 100
+GLAND.NS,Gland Pharma Ltd.,Healthcare,Nifty Midcap 100
+GODREJPROP.NS,Godrej Properties Ltd.,Realty,Nifty Midcap 100
+GUJGASLTD.NS,Gujarat Gas Ltd.,Oil Gas & Consumable Fuels,Nifty Midcap 100
+HINDPETRO.NS,Hindustan Petroleum Corporation Ltd.,Oil Gas & Consumable Fuels,Nifty Midcap 100
+HINDZINC.NS,Hindustan Zinc Ltd.,Metals & Mining,Nifty Midcap 100
+HONAUT.NS,Honeywell Automation India Ltd.,Capital Goods,Nifty Midcap 100
+IDEA.NS,Vodafone Idea Ltd.,Telecommunication,Nifty Midcap 100
+IDFCFIRSTB.NS,IDFC First Bank Ltd.,Financial Services,Nifty Midcap 100
+IGL.NS,Indraprastha Gas Ltd.,Oil Gas & Consumable Fuels,Nifty Midcap 100
+INDHOTEL.NS,Indian Hotels Co. Ltd.,Consumer Services,Nifty Midcap 100
+INDIANB.NS,Indian Bank,Financial Services,Nifty Midcap 100
+IPCALAB.NS,Ipca Laboratories Ltd.,Healthcare,Nifty Midcap 100
+IRFC.NS,Indian Railway Finance Corporation Ltd.,Financial Services,Nifty Midcap 100
+JSWENERGY.NS,JSW Energy Ltd.,Power,Nifty Midcap 100
+JUBLFOOD.NS,Jubilant Foodworks Ltd.,Consumer Services,Nifty Midcap 100
+L&TFH.NS,L&T Finance Holdings Ltd.,Financial Services,Nifty Midcap 100
+LALPATHLAB.NS,Dr. Lal Path Labs Ltd.,Healthcare,Nifty Midcap 100
+LAURUSLABS.NS,Laurus Labs Ltd.,Healthcare,Nifty Midcap 100
+LICHSGFIN.NS,LIC Housing Finance Ltd.,Financial Services,Nifty Midcap 100
+LTTS.NS,L&T Technology Services Ltd.,Information Technology,Nifty Midcap 100
+LUPIN.NS,Lupin Ltd.,Healthcare,Nifty Midcap 100
+M&MFIN.NS,Mahindra & Mahindra Financial Services Ltd.,Financial Services,Nifty Midcap 100
+MANKIND.NS,Mankind Pharma Ltd.,Healthcare,Nifty Midcap 100
+MAXHEALTH.NS,Max Healthcare Institute Ltd.,Healthcare,Nifty Midcap 100
+MFSL.NS,Max Financial Services Ltd.,Financial Services,Nifty Midcap 100
+MPHASIS.NS,MphasiS Ltd.,Information Technology,Nifty Midcap 100
+MRF.NS,MRF Ltd.,Automobile and Auto Components,Nifty Midcap 100
+MSUMI.NS,Motherson Sumi Wiring India Ltd.,Automobile and Auto Components,Nifty Midcap 100
+NAVINFLUOR.NS,Navin Fluorine International Ltd.,Chemicals,Nifty Midcap 100
+NHPC.NS,NHPC Ltd.,Power,Nifty Midcap 100
+NMDC.NS,NMDC Ltd.,Metals & Mining,Nifty Midcap 100
+OBEROIRLTY.NS,Oberoi Realty Ltd.,Realty,Nifty Midcap 100
+OFSS.NS,Oracle Financial Services Software Ltd.,Information Technology,Nifty Midcap 100
+OIL.NS,Oil India Ltd.,Oil Gas & Consumable Fuels,Nifty Midcap 100
+PATANJALI.NS,Patanjali Foods Ltd.,Fast Moving Consumer Goods,Nifty Midcap 100
+PAYTM.NS,One 97 Communications Ltd.,Financial Services,Nifty Midcap 100
+PEL.NS,Piramal Enterprises Ltd.,Financial Services,Nifty Midcap 100
+PERSISTENT.NS,Persistent Systems Ltd.,Information Technology,Nifty Midcap 100
+PETRONET.NS,Petronet LNG Ltd.,Oil Gas & Consumable Fuels,Nifty Midcap 100
+PFC.NS,Power Finance Corporation Ltd.,Financial Services,Nifty Midcap 100
+PNB.NS,Punjab National Bank,Financial Services,Nifty Midcap 100
+POLICYBZR.NS,PB Fintech Ltd.,Financial Services,Nifty Midcap 100
+POLYCAB.NS,Polycab India Ltd.,Capital Goods,Nifty Midcap 100
+POONAWALLA.NS,Poonawalla Fincorp Ltd.,Financial Services,Nifty Midcap 100
+PRESTIGE.NS,Prestige Estates Projects Ltd.,Realty,Nifty Midcap 100
+RAMCOCEM.NS,The Ramco Cements Ltd.,Construction Materials,Nifty Midcap 100
+RECLTD.NS,REC Ltd.,Financial Services,Nifty Midcap 100
+SAIL.NS,Steel Authority of India Ltd.,Metals & Mining,Nifty Midcap 100
+SHRIRAMFIN.NS,Shriram Finance Ltd.,Financial Services,Nifty Midcap 100
+SONACOMS.NS,Sona BLW Precision Forgings Ltd.,Automobile and Auto Components,Nifty Midcap 100
+SUNTV.NS,Sun TV Network Ltd.,Media Entertainment & Publication,Nifty Midcap 100
+SYNGENE.NS,Syngene International Ltd.,Healthcare,Nifty Midcap 100
+TATACHEM.NS,Tata Chemicals Ltd.,Chemicals,Nifty Midcap 100
+TATACOMM.NS,Tata Communications Ltd.,Telecommunication,Nifty Midcap 100
+TATAELXSI.NS,Tata Elxsi Ltd.,Information Technology,Nifty Midcap 100
+TIINDIA.NS,Tube Investments of India Ltd.,Automobile and Auto Components,Nifty Midcap 100
+TORNTPOWER.NS,Torrent Power Ltd.,Power,Nifty Midcap 100
+TRENT.NS,Trent Ltd.,Consumer Services,Nifty Midcap 100
+TRIDENT.NS,Trident Ltd.,Textiles,Nifty Midcap 100
+TTML.NS,Tata Teleservices (Maharashtra) Ltd.,Telecommunication,Nifty Midcap 100
+TVSMOTOR.NS,TVS Motor Company Ltd.,Automobile and Auto Components,Nifty Midcap 100
+UBL.NS,United Breweries Ltd.,Fast Moving Consumer Goods,Nifty Midcap 100
+UNIONBANK.NS,Union Bank of India,Financial Services,Nifty Midcap 100
+VOLTAS.NS,Voltas Ltd.,Consumer Durables,Nifty Midcap 100
+WHIRLPOOL.NS,Whirlpool of India Ltd.,Consumer Durables,Nifty Midcap 100
+YESBANK.NS,Yes Bank Ltd.,Financial Services,Nifty Midcap 100
+ZEEL.NS,Zee Entertainment Enterprises Ltd.,Media Entertainment & Publication,Nifty Midcap 100
+ZYDUSLIFE.NS,Zydus Lifesciences Ltd.,Healthcare,Nifty Midcap 100

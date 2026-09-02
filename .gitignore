@@ -6,3 +6,5 @@ data/processed/
 .ipynb_checkpoints/
 reports/figures/*.png
 .DS_Store
+*:Zone.Identifier
+~$*

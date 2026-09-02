@@ -1,0 +1,22 @@
+{
+  "in_sample": {
+    "index_cagr": 0.1392097853027625,
+    "universe_ew_cagr": 0.3444814080102896,
+    "strategy_cagr": 0.599517139954215,
+    "total_excess_over_index": 0.46030735465145245,
+    "attributable_to_universe_composition": 0.20527162270752708,
+    "attributable_to_strategy_selection": 0.25503573194392537,
+    "composition_share_of_excess": 0.44594469463334996,
+    "strategy_beats_own_universe": true
+  },
+  "out_of_sample": {
+    "index_cagr": -0.1290056206415694,
+    "universe_ew_cagr": 0.03805076340505131,
+    "strategy_cagr": 0.26451429883057065,
+    "total_excess_over_index": 0.39351991947214005,
+    "attributable_to_universe_composition": 0.1670563840466207,
+    "attributable_to_strategy_selection": 0.22646353542551934,
+    "composition_share_of_excess": 0.4245182410860088,
+    "strategy_beats_own_universe": true
+  }
+}

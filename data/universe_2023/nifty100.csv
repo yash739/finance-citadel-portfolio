@@ -1,0 +1,105 @@
+# Nifty 100 constituents
+# Snapshot date: 2023-08-08 (Internet Archive)
+# Source: https://web.archive.org/web/20230808043706/https://niftyindices.com/IndexConstituent/ind_nifty100list.csv
+ticker,name,sector,index
+ABB.NS,ABB India Ltd.,Capital Goods,Nifty 100
+ACC.NS,ACC Ltd.,Construction Materials,Nifty 100
+ADANIENT.NS,Adani Enterprises Ltd.,Metals & Mining,Nifty 100
+ADANIGREEN.NS,Adani Green Energy Ltd.,Power,Nifty 100
+ADANIPORTS.NS,Adani Ports and Special Economic Zone Ltd.,Services,Nifty 100
+ADANITRANS.NS,Adani Transmission Ltd.,Power,Nifty 100
+AMBUJACEM.NS,Ambuja Cements Ltd.,Construction Materials,Nifty 100
+APOLLOHOSP.NS,Apollo Hospitals Enterprise Ltd.,Healthcare,Nifty 100
+ASIANPAINT.NS,Asian Paints Ltd.,Consumer Durables,Nifty 100
+ATGL.NS,Adani Total Gas Ltd.,Oil Gas & Consumable Fuels,Nifty 100
+AWL.NS,Adani Wilmar Ltd.,Fast Moving Consumer Goods,Nifty 100
+AXISBANK.NS,Axis Bank Ltd.,Financial Services,Nifty 100
+BAJAJ-AUTO.NS,Bajaj Auto Ltd.,Automobile and Auto Components,Nifty 100
+BAJAJFINSV.NS,Bajaj Finserv Ltd.,Financial Services,Nifty 100
+BAJAJHLDNG.NS,Bajaj Holdings & Investment Ltd.,Financial Services,Nifty 100
+BAJFINANCE.NS,Bajaj Finance Ltd.,Financial Services,Nifty 100
+BANKBARODA.NS,Bank of Baroda,Financial Services,Nifty 100
+BEL.NS,Bharat Electronics Ltd.,Capital Goods,Nifty 100
+BERGEPAINT.NS,Berger Paints India Ltd.,Consumer Durables,Nifty 100
+BHARTIARTL.NS,Bharti Airtel Ltd.,Telecommunication,Nifty 100
+BOSCHLTD.NS,Bosch Ltd.,Automobile and Auto Components,Nifty 100
+BPCL.NS,Bharat Petroleum Corporation Ltd.,Oil Gas & Consumable Fuels,Nifty 100
+BRITANNIA.NS,Britannia Industries Ltd.,Fast Moving Consumer Goods,Nifty 100
+CANBK.NS,Canara Bank,Financial Services,Nifty 100
+CHOLAFIN.NS,Cholamandalam Investment and Finance Company Ltd.,Financial Services,Nifty 100
+CIPLA.NS,Cipla Ltd.,Healthcare,Nifty 100
+COALINDIA.NS,Coal India Ltd.,Oil Gas & Consumable Fuels,Nifty 100
+COLPAL.NS,Colgate Palmolive (India) Ltd.,Fast Moving Consumer Goods,Nifty 100
+DABUR.NS,Dabur India Ltd.,Fast Moving Consumer Goods,Nifty 100
+DIVISLAB.NS,Divi's Laboratories Ltd.,Healthcare,Nifty 100
+DLF.NS,DLF Ltd.,Realty,Nifty 100
+DMART.NS,Avenue Supermarts Ltd.,Consumer Services,Nifty 100
+DRREDDY.NS,Dr. Reddy's Laboratories Ltd.,Healthcare,Nifty 100
+DUMMYREL.NS,Dummy - Jio Financial Services Ltd.,Financial Services,Nifty 100
+EICHERMOT.NS,Eicher Motors Ltd.,Automobile and Auto Components,Nifty 100
+GAIL.NS,GAIL (India) Ltd.,Oil Gas & Consumable Fuels,Nifty 100
+GODREJCP.NS,Godrej Consumer Products Ltd.,Fast Moving Consumer Goods,Nifty 100
+GRASIM.NS,Grasim Industries Ltd.,Construction Materials,Nifty 100
+HAL.NS,Hindustan Aeronautics Ltd.,Capital Goods,Nifty 100
+HAVELLS.NS,Havells India Ltd.,Consumer Durables,Nifty 100
+HCLTECH.NS,HCL Technologies Ltd.,Information Technology,Nifty 100
+HDFCAMC.NS,HDFC Asset Management Company Ltd.,Financial Services,Nifty 100
+HDFCBANK.NS,HDFC Bank Ltd.,Financial Services,Nifty 100
+HDFCLIFE.NS,HDFC Life Insurance Company Ltd.,Financial Services,Nifty 100
+HEROMOTOCO.NS,Hero MotoCorp Ltd.,Automobile and Auto Components,Nifty 100
+HINDALCO.NS,Hindalco Industries Ltd.,Metals & Mining,Nifty 100
+HINDUNILVR.NS,Hindustan Unilever Ltd.,Fast Moving Consumer Goods,Nifty 100
+ICICIBANK.NS,ICICI Bank Ltd.,Financial Services,Nifty 100
+ICICIGI.NS,ICICI Lombard General Insurance Company Ltd.,Financial Services,Nifty 100
+ICICIPRULI.NS,ICICI Prudential Life Insurance Company Ltd.,Financial Services,Nifty 100
+INDIGO.NS,InterGlobe Aviation Ltd.,Services,Nifty 100
+INDUSINDBK.NS,IndusInd Bank Ltd.,Financial Services,Nifty 100
+INDUSTOWER.NS,Indus Towers Ltd.,Telecommunication,Nifty 100
+INFY.NS,Infosys Ltd.,Information Technology,Nifty 100
+IOC.NS,Indian Oil Corporation Ltd.,Oil Gas & Consumable Fuels,Nifty 100
+IRCTC.NS,Indian Railway Catering And Tourism Corporation Ltd.,Consumer Services,Nifty 100
+ITC.NS,ITC Ltd.,Fast Moving Consumer Goods,Nifty 100
+JINDALSTEL.NS,Jindal Steel & Power Ltd.,Metals & Mining,Nifty 100
+JSWSTEEL.NS,JSW Steel Ltd.,Metals & Mining,Nifty 100
+KOTAKBANK.NS,Kotak Mahindra Bank Ltd.,Financial Services,Nifty 100
+LICI.NS,Life Insurance Corporation of India,Financial Services,Nifty 100
+LT.NS,Larsen & Toubro Ltd.,Construction,Nifty 100
+LTIM.NS,LTIMindtree Ltd.,Information Technology,Nifty 100
+M&M.NS,Mahindra & Mahindra Ltd.,Automobile and Auto Components,Nifty 100
+MARICO.NS,Marico Ltd.,Fast Moving Consumer Goods,Nifty 100
+MARUTI.NS,Maruti Suzuki India Ltd.,Automobile and Auto Components,Nifty 100
+MCDOWELL-N.NS,United Spirits Ltd.,Fast Moving Consumer Goods,Nifty 100
+MOTHERSON.NS,Samvardhana Motherson International Ltd.,Automobile and Auto Components,Nifty 100
+MUTHOOTFIN.NS,Muthoot Finance Ltd.,Financial Services,Nifty 100
+NAUKRI.NS,Info Edge (India) Ltd.,Consumer Services,Nifty 100
+NESTLEIND.NS,Nestle India Ltd.,Fast Moving Consumer Goods,Nifty 100
+NTPC.NS,NTPC Ltd.,Power,Nifty 100
+NYKAA.NS,FSN E-Commerce Ventures Ltd.,Consumer Services,Nifty 100
+ONGC.NS,Oil & Natural Gas Corporation Ltd.,Oil Gas & Consumable Fuels,Nifty 100
+PAGEIND.NS,Page Industries Ltd.,Textiles,Nifty 100
+PGHH.NS,Procter & Gamble Hygiene & Health Care Ltd.,Fast Moving Consumer Goods,Nifty 100
+PIDILITIND.NS,Pidilite Industries Ltd.,Chemicals,Nifty 100
+PIIND.NS,PI Industries Ltd.,Chemicals,Nifty 100
+POWERGRID.NS,Power Grid Corporation of India Ltd.,Power,Nifty 100
+RELIANCE.NS,Reliance Industries Ltd.,Oil Gas & Consumable Fuels,Nifty 100
+SBICARD.NS,SBI Cards and Payment Services Ltd.,Financial Services,Nifty 100
+SBILIFE.NS,SBI Life Insurance Company Ltd.,Financial Services,Nifty 100
+SBIN.NS,State Bank of India,Financial Services,Nifty 100
+SHREECEM.NS,Shree Cement Ltd.,Construction Materials,Nifty 100
+SIEMENS.NS,Siemens Ltd.,Capital Goods,Nifty 100
+SRF.NS,SRF Ltd.,Chemicals,Nifty 100
+SUNPHARMA.NS,Sun Pharmaceutical Industries Ltd.,Healthcare,Nifty 100
+TATACONSUM.NS,Tata Consumer Products Ltd.,Fast Moving Consumer Goods,Nifty 100
+TATAMOTORS.NS,Tata Motors Ltd.,Automobile and Auto Components,Nifty 100
+TATAPOWER.NS,Tata Power Co. Ltd.,Power,Nifty 100
+TATASTEEL.NS,Tata Steel Ltd.,Metals & Mining,Nifty 100
+TCS.NS,Tata Consultancy Services Ltd.,Information Technology,Nifty 100
+TECHM.NS,Tech Mahindra Ltd.,Information Technology,Nifty 100
+TITAN.NS,Titan Company Ltd.,Consumer Durables,Nifty 100
+TORNTPHARM.NS,Torrent Pharmaceuticals Ltd.,Healthcare,Nifty 100
+ULTRACEMCO.NS,UltraTech Cement Ltd.,Construction Materials,Nifty 100
+UPL.NS,UPL Ltd.,Chemicals,Nifty 100
+VBL.NS,Varun Beverages Ltd.,Fast Moving Consumer Goods,Nifty 100
+VEDL.NS,Vedanta Ltd.,Metals & Mining,Nifty 100
+WIPRO.NS,Wipro Ltd.,Information Technology,Nifty 100
+ZOMATO.NS,Zomato Ltd.,Consumer Services,Nifty 100

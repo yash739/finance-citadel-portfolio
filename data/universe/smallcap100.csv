@@ -1,2 +1,105 @@
+# Nifty Smallcap 100 constituents
+# Snapshot date: 2026-08-25
+# Source: https://niftyindices.com/IndexConstituent/ind_niftysmallcap100list.csv
+# Applied retroactively across the whole backtest - see the survivorship-bias note in src/universe.py.
 ticker,name,sector,index
-# TODO: replace with actual Nifty Smallcap 100 constituents
+AARTIIND.NS,Aarti Industries Ltd.,Chemicals,Nifty Smallcap 100
+ABREL.NS,Aditya Birla Real Estate Ltd.,Realty,Nifty Smallcap 100
+AEGISLOG.NS,Aegis Logistics Ltd.,Oil Gas & Consumable Fuels,Nifty Smallcap 100
+AFCONS.NS,Afcons Infrastructure Ltd.,Construction,Nifty Smallcap 100
+AFFLE.NS,Affle 3i Ltd.,Information Technology,Nifty Smallcap 100
+AMBER.NS,Amber Enterprises India Ltd.,Consumer Durables,Nifty Smallcap 100
+ANANDRATHI.NS,Anand Rathi Wealth Ltd.,Financial Services,Nifty Smallcap 100
+ANANTRAJ.NS,Anant Raj Ltd.,Realty,Nifty Smallcap 100
+ANGELONE.NS,Angel One Ltd.,Financial Services,Nifty Smallcap 100
+APTUS.NS,Aptus Value Housing Finance India Ltd.,Financial Services,Nifty Smallcap 100
+ARE&M.NS,Amara Raja Energy & Mobility Ltd.,Automobile and Auto Components,Nifty Smallcap 100
+ASTERDM.NS,Aster DM Quality Care Ltd.,Healthcare,Nifty Smallcap 100
+ATHERENERG.NS,Ather Energy Ltd.,Automobile and Auto Components,Nifty Smallcap 100
+BANDHANBNK.NS,Bandhan Bank Ltd.,Financial Services,Nifty Smallcap 100
+BEML.NS,BEML Ltd.,Capital Goods,Nifty Smallcap 100
+BLS.NS,BLS International Services Ltd.,Consumer Services,Nifty Smallcap 100
+BRIGADE.NS,Brigade Enterprises Ltd.,Realty,Nifty Smallcap 100
+CAMS.NS,Computer Age Management Services Ltd.,Financial Services,Nifty Smallcap 100
+CASTROLIND.NS,Castrol India Ltd.,Oil Gas & Consumable Fuels,Nifty Smallcap 100
+CDSL.NS,Central Depository Services (India) Ltd.,Financial Services,Nifty Smallcap 100
+CESC.NS,CESC Ltd.,Power,Nifty Smallcap 100
+CGCL.NS,Capri Global Capital Ltd.,Financial Services,Nifty Smallcap 100
+CHAMBLFERT.NS,Chambal Fertilizers & Chemicals Ltd.,Chemicals,Nifty Smallcap 100
+CHOLAHLDNG.NS,Cholamandalam Financial Holdings Ltd.,Financial Services,Nifty Smallcap 100
+COHANCE.NS,Cohance Lifesciences Ltd.,Healthcare,Nifty Smallcap 100
+CREDITACC.NS,CreditAccess Grameen Ltd.,Financial Services,Nifty Smallcap 100
+CROMPTON.NS,Crompton Greaves Consumer Electricals Ltd.,Consumer Durables,Nifty Smallcap 100
+CUB.NS,City Union Bank Ltd.,Financial Services,Nifty Smallcap 100
+DATAPATTNS.NS,Data Patterns (India) Ltd.,Capital Goods,Nifty Smallcap 100
+DEEPAKFERT.NS,Deepak Fertilisers & Petrochemicals Corp. Ltd.,Chemicals,Nifty Smallcap 100
+DELHIVERY.NS,Delhivery Ltd.,Services,Nifty Smallcap 100
+DEVYANI.NS,Devyani International Ltd.,Consumer Services,Nifty Smallcap 100
+FIRSTCRY.NS,Brainbees Solutions Ltd.,Consumer Services,Nifty Smallcap 100
+FIVESTAR.NS,Five-Star Business Finance Ltd.,Financial Services,Nifty Smallcap 100
+FORCEMOT.NS,Force Motors Ltd.,Automobile and Auto Components,Nifty Smallcap 100
+FSL.NS,Firstsource Solutions Ltd.,Services,Nifty Smallcap 100
+GESHIP.NS,Great Eastern Shipping Co. Ltd.,Services,Nifty Smallcap 100
+GLAND.NS,Gland Pharma Ltd.,Healthcare,Nifty Smallcap 100
+GMDCLTD.NS,Gujarat Mineral Development Corporation Ltd.,Metals & Mining,Nifty Smallcap 100
+GPIL.NS,Godawari Power & Ispat Ltd.,Capital Goods,Nifty Smallcap 100
+GRSE.NS,Garden Reach Shipbuilders & Engineers Ltd.,Capital Goods,Nifty Smallcap 100
+HBLENGINE.NS,HBL Engineering Ltd.,Capital Goods,Nifty Smallcap 100
+HINDCOPPER.NS,Hindustan Copper Ltd.,Metals & Mining,Nifty Smallcap 100
+HSCL.NS,Himadri Speciality Chemical Ltd.,Chemicals,Nifty Smallcap 100
+IDBI.NS,IDBI Bank Ltd.,Financial Services,Nifty Smallcap 100
+IFCI.NS,IFCI Ltd.,Financial Services,Nifty Smallcap 100
+IGL.NS,Indraprastha Gas Ltd.,Oil Gas & Consumable Fuels,Nifty Smallcap 100
+IIFL.NS,IIFL Finance Ltd.,Financial Services,Nifty Smallcap 100
+IKS.NS,Inventurus Knowledge Solutions Ltd.,Information Technology,Nifty Smallcap 100
+INOXWIND.NS,Inox Wind Ltd.,Capital Goods,Nifty Smallcap 100
+IRCON.NS,IRCON International Ltd.,Construction,Nifty Smallcap 100
+ITI.NS,ITI Ltd.,Telecommunication,Nifty Smallcap 100
+JBMA.NS,JBM Auto Ltd.,Automobile and Auto Components,Nifty Smallcap 100
+JMFINANCIL.NS,JM Financial Ltd.,Financial Services,Nifty Smallcap 100
+JSWCEMENT.NS,JSW Cement Ltd.,Construction Materials,Nifty Smallcap 100
+JYOTICNC.NS,Jyoti CNC Automation Ltd.,Capital Goods,Nifty Smallcap 100
+KARURVYSYA.NS,Karur Vysya Bank Ltd.,Financial Services,Nifty Smallcap 100
+KAYNES.NS,Kaynes Technology India Ltd.,Capital Goods,Nifty Smallcap 100
+KEC.NS,Kec International Ltd.,Construction,Nifty Smallcap 100
+KFINTECH.NS,Kfin Technologies Ltd.,Financial Services,Nifty Smallcap 100
+LALPATHLAB.NS,Dr. Lal Path Labs Ltd.,Healthcare,Nifty Smallcap 100
+MANAPPURAM.NS,Manappuram Finance Ltd.,Financial Services,Nifty Smallcap 100
+MEESHO.NS,Meesho Ltd.,Consumer Services,Nifty Smallcap 100
+MRPL.NS,Mangalore Refinery & Petrochemicals Ltd.,Oil Gas & Consumable Fuels,Nifty Smallcap 100
+NATCOPHARM.NS,NATCO Pharma Ltd.,Healthcare,Nifty Smallcap 100
+NAVINFLUOR.NS,Navin Fluorine International Ltd.,Chemicals,Nifty Smallcap 100
+NBCC.NS,NBCC (India) Ltd.,Construction,Nifty Smallcap 100
+NETWEB.NS,Netweb Technologies India Ltd.,Information Technology,Nifty Smallcap 100
+NEULANDLAB.NS,Neuland Laboratories Ltd.,Healthcare,Nifty Smallcap 100
+NH.NS,Narayana Hrudayalaya Ltd.,Healthcare,Nifty Smallcap 100
+NUVAMA.NS,Nuvama Wealth Management Ltd.,Financial Services,Nifty Smallcap 100
+OLAELEC.NS,Ola Electric Mobility Ltd.,Automobile and Auto Components,Nifty Smallcap 100
+PGEL.NS,PG Electroplast Ltd.,Consumer Durables,Nifty Smallcap 100
+PINELABS.NS,Pine Labs Ltd.,Financial Services,Nifty Smallcap 100
+PIRAMALFIN.NS,Piramal Finance Ltd.,Financial Services,Nifty Smallcap 100
+PNBHOUSING.NS,PNB Housing Finance Ltd.,Financial Services,Nifty Smallcap 100
+POONAWALLA.NS,Poonawalla Fincorp Ltd.,Financial Services,Nifty Smallcap 100
+PPLPHARMA.NS,Piramal Pharma Ltd.,Healthcare,Nifty Smallcap 100
+PWL.NS,Physicswallah Ltd.,Consumer Services,Nifty Smallcap 100
+RAMCOCEM.NS,The Ramco Cements Ltd.,Construction Materials,Nifty Smallcap 100
+RBLBANK.NS,RBL Bank Ltd.,Financial Services,Nifty Smallcap 100
+REDINGTON.NS,Redington Ltd.,Services,Nifty Smallcap 100
+RPOWER.NS,Reliance Power Ltd.,Power,Nifty Smallcap 100
+SAGILITY.NS,Sagility Ltd.,Information Technology,Nifty Smallcap 100
+SAILIFE.NS,Sai Life Sciences Ltd.,Healthcare,Nifty Smallcap 100
+SARDAEN.NS,Sarda Energy and Minerals Ltd.,Metals & Mining,Nifty Smallcap 100
+SIGNATURE.NS,Signatureglobal (India) Ltd.,Realty,Nifty Smallcap 100
+SONACOMS.NS,Sona BLW Precision Forgings Ltd.,Automobile and Auto Components,Nifty Smallcap 100
+STARHEALTH.NS,Star Health and Allied Insurance Company Ltd.,Financial Services,Nifty Smallcap 100
+SWANCORP.NS,Swan Corp Ltd.,Chemicals,Nifty Smallcap 100
+SYNGENE.NS,Syngene International Ltd.,Healthcare,Nifty Smallcap 100
+TATACHEM.NS,Tata Chemicals Ltd.,Chemicals,Nifty Smallcap 100
+TATATECH.NS,Tata Technologies Ltd.,Information Technology,Nifty Smallcap 100
+TENNIND.NS,Tenneco Clean Air India Ltd.,Automobile and Auto Components,Nifty Smallcap 100
+TRITURBINE.NS,Triveni Turbine Ltd.,Capital Goods,Nifty Smallcap 100
+URBANCO.NS,Urban Company Ltd.,Consumer Services,Nifty Smallcap 100
+WELCORP.NS,Welspun Corp Ltd.,Capital Goods,Nifty Smallcap 100
+WHIRLPOOL.NS,Whirlpool of India Ltd.,Consumer Durables,Nifty Smallcap 100
+WOCKPHARMA.NS,Wockhardt Ltd.,Healthcare,Nifty Smallcap 100
+ZENSARTECH.NS,Zensar Technolgies Ltd.,Information Technology,Nifty Smallcap 100

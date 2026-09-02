@@ -40,8 +40,6 @@ python -m src.alt_strategies
 
 Environment: a conda env in WSL (`conda create -n citadel -c conda-forge python=3.11
 pandas numpy pyyaml matplotlib scipy pytest pyarrow && pip install yfinance tqdm`).
-All git remote operations run through WSL - port 22 is blocked on this network, so
-`~/.ssh/config` routes github.com over port 443.
 
 ## Repo layout
 
@@ -81,8 +79,7 @@ docs/strategy_notes.md      the actual stock-selection / weighting / rebalancing
   illiquid smallcap names.
 - **Universe membership**: index constituents change over 2021–2025. Using *today's*
   constituent list for the whole backtest period introduces a small survivorship/look-ahead
-  bias — acceptable given the timeline, but **disclose it explicitly** in the report's
-  Limitations section rather than silently.
+  bias — disclosed and investigated in the full report.
 - **Benchmark**: Nifty 100 (`^CNX100` / `^NSEI100`, verify exact Yahoo ticker) or Nifty 500.
 
 

@@ -85,13 +85,6 @@ docs/strategy_notes.md      the actual stock-selection / weighting / rebalancing
   Limitations section rather than silently.
 - **Benchmark**: Nifty 100 (`^CNX100` / `^NSEI100`, verify exact Yahoo ticker) or Nifty 500.
 
-## Team split
-
-See the shared plan doc for the full breakdown — short version: one person owns data +
-factors + stock selection (`universe.py`, `data_loader.py`, `factors.py`, `portfolio.py`),
-the other owns the backtest engine + evaluation (`backtest.py`, `metrics.py`,
-`benchmark.py`, `visualize.py`, `tests/`). Both write the report together once results
-are in.
 
 ## Reproducibility checklist before submitting
 

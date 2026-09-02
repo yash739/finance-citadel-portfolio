@@ -73,22 +73,22 @@ def test_starts_at_starting_capital():
 
 
 def test_decomposition_components_sum_to_total_excess():
-    """bias + selection must equal the total excess, exactly - otherwise the
+    """composition + selection must equal the total excess, exactly - otherwise the
     attribution is hiding return somewhere."""
     strat = nav([100, 130])
     uni = nav([100, 115])
     index = nav([100, 105])
     d = decompose(strat, uni, index)
     assert (
-        d["attributable_to_survivorship_bias"] + d["attributable_to_strategy_selection"]
+        d["attributable_to_universe_composition"] + d["attributable_to_strategy_selection"]
         == pytest.approx(d["total_excess_over_index"])
     )
 
 
-def test_bias_is_universe_minus_index():
+def test_composition_is_universe_minus_index():
     strat, uni, index = nav([100, 130]), nav([100, 115]), nav([100, 105])
     d = decompose(strat, uni, index)
-    assert d["attributable_to_survivorship_bias"] == pytest.approx(
+    assert d["attributable_to_universe_composition"] == pytest.approx(
         annualised_return(uni) - annualised_return(index)
     )
 
@@ -109,7 +109,7 @@ def test_flags_when_strategy_genuinely_adds_value():
     assert d["attributable_to_strategy_selection"] > 0
 
 
-def test_zero_bias_when_universe_matches_index():
+def test_zero_composition_when_universe_matches_index():
     d = decompose(nav([100, 130]), nav([100, 110]), nav([100, 110]))
-    assert d["attributable_to_survivorship_bias"] == pytest.approx(0.0)
-    assert d["bias_share_of_excess"] == pytest.approx(0.0)
+    assert d["attributable_to_universe_composition"] == pytest.approx(0.0)
+    assert d["composition_share_of_excess"] == pytest.approx(0.0)

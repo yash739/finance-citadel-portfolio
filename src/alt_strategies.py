@@ -74,7 +74,7 @@ def _market(prices: pd.DataFrame) -> pd.Series:
     Built in-panel rather than from an index column, because the scorer only ever
     receives tradeable names. Uses only data up to the rebalance date.
     """
-    return prices.pct_change().mean(axis=1, skipna=True).fillna(0.0)
+    return prices.pct_change(fill_method=None).mean(axis=1, skipna=True).fillna(0.0)
 
 
 # ------------------------------------------------------------------ scorers
@@ -126,7 +126,7 @@ def residual_momentum_scorer(lookback_months: int = 12, skip_months: int = 2):
 
         window = px.iloc[-n:]
         end = -(skip + 1) if skip else -1
-        rets = window.pct_change().iloc[1:]
+        rets = window.pct_change(fill_method=None).iloc[1:]
         mkt = _market(prices).reindex(rets.index).fillna(0.0)
 
         var = float(mkt.var(ddof=1))
@@ -178,7 +178,7 @@ def low_beta_scorer(lookback_months: int = 12):
         if not len(pool):
             return _blank(prices)
         n = lookback_months * MONTH
-        rets = prices[pool].iloc[-n:].pct_change().iloc[1:]
+        rets = prices[pool].iloc[-n:].pct_change(fill_method=None).iloc[1:]
         mkt = _market(prices).reindex(rets.index).fillna(0.0)
         var = float(mkt.var(ddof=1))
         if not np.isfinite(var) or var <= 0:
@@ -201,7 +201,7 @@ def consistency_scorer(lookback_months: int = 12):
         marks = px.iloc[::MONTH]
         if len(marks) < 3:
             return _blank(prices)
-        monthly = marks.pct_change().iloc[1:]
+        monthly = marks.pct_change(fill_method=None).iloc[1:]
         return (monthly > 0).mean().reindex(prices.columns)
     return scorer
 
@@ -216,7 +216,7 @@ def illiquidity_scorer(lookback_months: int = 3):
         px = prices[pool].iloc[-n:]
         vol = volumes[pool].reindex(index=px.index)
         turnover = (px * vol).replace(0.0, np.nan)
-        impact = px.pct_change().abs() / turnover
+        impact = px.pct_change(fill_method=None).abs() / turnover
         return impact.mean().reindex(prices.columns)
     return scorer
 
@@ -276,7 +276,7 @@ def build_candidates(panels):
     mom = None  # the shipped composite is score_fn=None (uses config)
 
     cands = {
-        "SHIPPED mom60/lowvol40 skip2": (None, None),
+        "SHIPPED mom55/lowvol45 skip2": (None, None),
         "-- single signal families --": (None, None),
         "reversal (1m loser)": (None, reversal_scorer(1)),
         "reversal (3m loser)": (None, reversal_scorer(3)),

@@ -56,6 +56,13 @@ def momentum_score(
     lookback_rows = lookback_months * TRADING_DAYS_PER_MONTH
     skip_rows = skip_months * TRADING_DAYS_PER_MONTH
 
+    # The skip must leave at least one row of formation period inside the lookback
+    # window. If it does not (skip >= lookback), the factor is undefined rather than
+    # a crash - guard it explicitly so a parameter sweep that crosses this boundary
+    # returns NaN instead of an IndexError deep in the accounting loop.
+    if lookback_rows <= 0 or skip_rows + 1 > lookback_rows:
+        return pd.Series(np.nan, index=prices.columns, name="momentum")
+
     if len(prices) < lookback_rows:
         return pd.Series(np.nan, index=prices.columns, name="momentum")
 
@@ -81,7 +88,7 @@ def low_vol_score(prices: pd.DataFrame, lookback_months: int = 6) -> pd.Series:
     lookback_rows = lookback_months * TRADING_DAYS_PER_MONTH
     window = _window(prices, lookback_rows + 1)
 
-    rets = window.pct_change().iloc[1:]
+    rets = window.pct_change(fill_method=None).iloc[1:]
     vol = rets.std() * np.sqrt(252)
 
     score = -vol

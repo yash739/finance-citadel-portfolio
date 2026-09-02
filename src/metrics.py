@@ -18,9 +18,12 @@ to guess which convention we picked):
   Sharpe ratio       annualised return / annualised volatility, with a 0% risk-free
                      rate as the guidelines specify. Annualised volatility is the
                      daily return standard deviation scaled by sqrt(252).
-  Accuracy           share of CLOSED round-trip positions with positive realised P&L.
-  Gain-to-loss       mean realised P&L of winning round trips / mean absolute realised
-                     P&L of losing round trips. Undefined (inf) with no losers.
+  Accuracy           share of CLOSED POSITIONS with positive whole-life realised P&L.
+                     A position (buy -> optional trims -> full exit) is one trade,
+                     counted once - NOT once per rebalancing trim. `accuracy_by_
+                     transaction` reports the finer per-sell-leg view alongside it.
+  Gain-to-loss       mean realised P&L of winning positions / mean absolute realised
+                     P&L of losing positions. Undefined (inf) with no losers.
   Turnover           total traded notional / (2 x average NAV), annualised - so a
                      book that fully replaces its holdings once a year reads as 1.0.
 """
@@ -41,7 +44,7 @@ def _clean_nav(nav: pd.Series) -> pd.Series:
 
 
 def daily_returns(nav: pd.Series) -> pd.Series:
-    return _clean_nav(nav).pct_change().dropna()
+    return _clean_nav(nav).pct_change(fill_method=None).dropna()
 
 
 def total_net_pnl(nav: pd.Series, starting_capital: float = None) -> float:
@@ -126,7 +129,9 @@ def calmar_ratio(nav: pd.Series) -> float:
     return float(annualised_return(nav) / mdd)
 
 
-def _pnl(round_trips) -> pd.Series:
+def _transaction_pnl(round_trips) -> pd.Series:
+    """Realised P&L of every closing transaction (each partial trim and each full
+    exit is one row). This is the finest-grained view of realised P&L."""
     if round_trips is None or len(round_trips) == 0:
         return pd.Series(dtype=float)
     df = pd.DataFrame(round_trips)
@@ -135,17 +140,63 @@ def _pnl(round_trips) -> pd.Series:
     return df["realised_pnl"].astype(float).dropna()
 
 
+def _position_pnl(round_trips) -> pd.Series:
+    """Whole-life realised P&L per CLOSED position episode.
+
+    A position is bought, optionally trimmed several times, then fully sold. Each of
+    those sells is a separate row in `round_trips`, all sharing one `position_id`.
+    Summing realised P&L within a position_id gives the P&L of the position as a
+    single trade - which is what "accuracy" and "gain-to-loss" should be measured
+    over, rather than counting each monthly rebalancing trim as its own trade.
+
+    Only positions that were fully closed (a row with closed_fully=True exists for the
+    id) are included; positions still open on the final day have an unknown final
+    outcome and are excluded, exactly as an open winner is excluded from accuracy.
+
+    Falls back to per-transaction P&L for legacy trade logs that predate position_id.
+    """
+    if round_trips is None or len(round_trips) == 0:
+        return pd.Series(dtype=float)
+    df = pd.DataFrame(round_trips)
+    if "realised_pnl" not in df.columns:
+        return pd.Series(dtype=float)
+    if "position_id" not in df.columns or df["position_id"].isna().all():
+        return df["realised_pnl"].astype(float).dropna()
+
+    df = df.dropna(subset=["position_id"])
+    if "closed_fully" in df.columns:
+        closed_ids = df.loc[df["closed_fully"].astype(bool), "position_id"].unique()
+        df = df[df["position_id"].isin(closed_ids)]
+    if df.empty:
+        return pd.Series(dtype=float)
+    return df.groupby("position_id")["realised_pnl"].sum().astype(float)
+
+
 def accuracy(round_trips) -> float:
-    """Share of closed round trips that made money, net of costs on both legs."""
-    pnl = _pnl(round_trips)
+    """Share of CLOSED POSITIONS that made money, net of costs on both legs.
+
+    A position (open -> optional trims -> full exit) counts once, on its whole-life
+    P&L - not once per trim. See _position_pnl."""
+    pnl = _position_pnl(round_trips)
+    if len(pnl) == 0:
+        return float("nan")
+    return float((pnl > 0).mean())
+
+
+def accuracy_by_transaction(round_trips) -> float:
+    """Share of individual closing transactions (trims + exits) that made money.
+
+    Reported alongside `accuracy` for transparency: it counts every partial sell,
+    so it is finer-grained and typically differs from the position-level number."""
+    pnl = _transaction_pnl(round_trips)
     if len(pnl) == 0:
         return float("nan")
     return float((pnl > 0).mean())
 
 
 def gain_to_loss_ratio(round_trips) -> float:
-    """Mean winning P&L / mean absolute losing P&L, over closed round trips."""
-    pnl = _pnl(round_trips)
+    """Mean winning P&L / mean absolute losing P&L, over closed POSITIONS."""
+    pnl = _position_pnl(round_trips)
     if len(pnl) == 0:
         return float("nan")
     wins = pnl[pnl > 0]
@@ -158,8 +209,9 @@ def gain_to_loss_ratio(round_trips) -> float:
 
 
 def profit_factor(round_trips) -> float:
-    """Gross profit / gross loss - the aggregate cousin of gain-to-loss."""
-    pnl = _pnl(round_trips)
+    """Gross profit / gross loss over closed POSITIONS - the aggregate cousin of
+    gain-to-loss."""
+    pnl = _position_pnl(round_trips)
     if len(pnl) == 0:
         return float("nan")
     gross_loss = abs(pnl[pnl < 0].sum())
@@ -168,18 +220,24 @@ def profit_factor(round_trips) -> float:
     return float(pnl[pnl > 0].sum() / gross_loss)
 
 
+def n_closed_positions(round_trips) -> int:
+    """How many position episodes were fully closed - the true 'number of trades'."""
+    return int(len(_position_pnl(round_trips)))
+
+
 def trade_stats(trades, round_trips=None, nav: pd.Series = None) -> dict:
     """Execution-level statistics: counts, costs paid, and annualised turnover."""
     out = {
         "n_executions": 0,
         "n_buys": 0,
         "n_sells": 0,
-        "n_round_trips": 0,
+        "n_closed_positions": 0,       # fully-closed position episodes = "trades"
+        "n_closing_transactions": 0,   # every sell leg (trims + exits)
         "n_unique_stocks_traded": 0,
         "total_transaction_cost_inr": 0.0,
         "total_traded_notional_inr": 0.0,
         "annualised_turnover": float("nan"),
-        "avg_round_trips_per_stock": float("nan"),
+        "avg_trades_per_stock": float("nan"),
     }
     if trades is None or len(trades) == 0:
         return out
@@ -193,10 +251,12 @@ def trade_stats(trades, round_trips=None, nav: pd.Series = None) -> dict:
     out["total_traded_notional_inr"] = float(df["notional"].sum())
 
     rt = pd.DataFrame(round_trips) if round_trips is not None and len(round_trips) else pd.DataFrame()
-    out["n_round_trips"] = int(len(rt))
+    out["n_closing_transactions"] = int(len(rt))
+    out["n_closed_positions"] = n_closed_positions(round_trips)
     if out["n_unique_stocks_traded"]:
-        out["avg_round_trips_per_stock"] = round(
-            out["n_round_trips"] / out["n_unique_stocks_traded"], 3
+        # "Trades per stock" is reported over closed positions, the §7 sense of a trade.
+        out["avg_trades_per_stock"] = round(
+            out["n_closed_positions"] / out["n_unique_stocks_traded"], 3
         )
 
     if nav is not None and len(nav) > 1:
@@ -236,6 +296,7 @@ def all_metrics(
         "gain_to_loss_ratio": gain_to_loss_ratio(round_trips),
         "profit_factor": profit_factor(round_trips),
         "accuracy": accuracy(round_trips),
+        "accuracy_by_transaction": accuracy_by_transaction(round_trips),
         "trade_stats": trade_stats(trades, round_trips, nav),
         "starting_capital_inr": float(starting_capital) if starting_capital else float(pd.Series(nav).iloc[0]),
         "final_nav_inr": float(pd.Series(nav).dropna().iloc[-1]),

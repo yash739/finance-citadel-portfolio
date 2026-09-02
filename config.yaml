@@ -22,39 +22,44 @@ dates:
 costs:
   transaction_cost_pct: 0.001    # 0.1% per transaction, applied on both buys and sells
 
-# Factor definitions. These are chosen from convention, NOT optimised on this data -
-# that is the whole argument for why the rule should generalise out-of-sample. Do not
-# tune them against the backtest result; if you change anything here, say so in the
-# report and re-run both windows.
-# Every value below was chosen by the ladder + sweeps in src/experiments.py, and
-# each is defended by a PLATEAU (neighbouring values also work), never by a peak.
-# Reproduce with: python -m src.experiments --all
+# Factor definitions. Parameters are fixed by convention plus a TRAIN/VALIDATE split
+# INSIDE the backtest period - never by looking at the 2026 out-of-sample window. The
+# protocol: select on 2021-2023 (train), confirm the choice still works on 2024-2025
+# (validate), and only then run 2026 H1 once as a genuinely held-out test. This is the
+# whole argument for why the rule should generalise. Do not tune anything here against
+# the 2026 result; if you change a value, say so in the report and re-run both windows.
+# Reproduce the selection evidence with: python -m src.experiments --select
 factors:
-  # 12 months is the textbook lookback. The sweep over 3/6/9/12/15/18/24 is jagged
-  # rather than smoothly peaked, which means those differences are sampling noise -
-  # so we keep the conventional value rather than mining it.
+  # 12 months is the textbook lookback AND the robust choice on the split: train
+  # selection alpha peaks near 9-12 months (+30.0 / +28.9) and 12 also validates well
+  # (+11.8), while the very short and very long windows are jagged and validate poorly.
+  # Convention and the data agree, so we keep the conventional value.
   momentum_lookback_months: 12
   # Skip the most recent TWO months, not one. Short-term reversal persists longer in
-  # mid/smallcaps than the textbook 1-month skip assumes. Selection alpha over
-  # skip = 0/1/2/3/4 is +10.2 / +16.0 / +21.0 / +16.4 / +13.7 - a smooth hump centred
-  # on 2, not a spike. HONESTY NOTE: this is the one parameter picked from this data
-  # rather than from convention. skip=1 (the literature standard) also works and is
-  # the conservative fallback; see docs/strategy_notes.md.
+  # mid/smallcaps than the textbook 1-month skip assumes. On the split, train selection
+  # alpha over skip = 0/1/2/3/4 is +16.2 / +20.3 / +28.9 / +15.0 / +16.9 - a hump
+  # centred on 2 - and skip=2 also validates strongly (+11.8 on 2024-2025). HONESTY
+  # NOTE: this is the one parameter chosen from the data rather than from convention;
+  # it was chosen on TRAIN and confirmed on VALIDATE, not on 2026. skip=1 (the
+  # literature standard) is the conservative fallback and also validates - see
+  # docs/strategy_notes.md.
   momentum_skip_months: 2
   low_vol_lookback_months: 6
   liquidity_lookback_months: 3
   # Rs 5 crore average daily turnover. A Rs 10-25 lakh position is then well under
   # 1% of a typical day's volume, so the fills we assume are realistic.
   min_avg_daily_turnover_inr: 50000000
-  # 60/40, not 50/50. Low-vol is a REAL drag as a selection factor - on its own it
-  # scores -17.3% mean selection alpha and is negative in 4 of 5 years. But a little
-  # of it still buys drawdown protection. Selection alpha across momentum weight
-  # 30..100% rises to a broad plateau at 55-70% (+15.6 / +17.3 / +14.9) and 50/50
-  # sits on the edge of a cliff: at 50% out-of-sample alpha is -3.7%, at 55% it is
-  # +5.9%. 60% is the middle of the safe region.
+  # 55/45. Low-vol is a drag as a SELECTION factor on its own (negative selection alpha
+  # in isolation), but a meaningful slice of it buys drawdown protection. The split
+  # decides the mix honestly: train selection alpha rises to a plateau above 55%
+  # (+33.6 at 55, +39.4 at 60, up to +44 at 80), but VALIDATE - the generalisation
+  # test - peaks at 50-55% (+11.8 / +11.7) and falls steadily as momentum weight rises
+  # (+7.3 at 60, +4.2 at 70, -0.1 at 80). We take 55%: the largest momentum tilt that
+  # is still validate-optimal, and the lower momentum weight also improves drawdown.
+  # We deliberately do NOT chase the higher train-only optimum, which overfits 2021-23.
   weights:
-    momentum: 0.6
-    low_vol: 0.4
+    momentum: 0.55
+    low_vol: 0.45
 
 rebalance:
   frequency: "M"                # "M" monthly, "Q" quarterly - pick deliberately, see docs/strategy_notes.md

@@ -59,7 +59,7 @@ def blended_benchmark(
         raise KeyError("none of %s are in the price panel" % list(tickers))
 
     sub = prices[available].astype(float).dropna(how="all").ffill()
-    rets = sub.pct_change().fillna(0.0)
+    rets = sub.pct_change(fill_method=None).fillna(0.0)
     if weights is None:
         w = pd.Series(1.0 / len(available), index=available)
     else:
@@ -85,8 +85,8 @@ def relative_metrics(portfolio_nav: pd.Series, benchmark_nav: pd.Series) -> dict
         raise ValueError("portfolio and benchmark share fewer than 3 dates")
     p, b = p.loc[common], b.loc[common]
 
-    pr = p.pct_change().dropna()
-    br = b.pct_change().dropna()
+    pr = p.pct_change(fill_method=None).dropna()
+    br = b.pct_change(fill_method=None).dropna()
     active = (pr - br).dropna()
 
     te = float(active.std(ddof=1) * np.sqrt(TRADING_DAYS_PER_YEAR)) if len(active) > 1 else np.nan

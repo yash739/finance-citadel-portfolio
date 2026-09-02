@@ -79,6 +79,17 @@ def test_momentum_is_nan_for_a_mostly_empty_column():
     assert np.isnan(momentum_score(pd.DataFrame({"A": s}), 12, 1)["A"])
 
 
+def test_momentum_skip_at_or_beyond_lookback_is_nan_not_a_crash():
+    """A sweep that sets skip >= lookback must return NaN, not IndexError. The skip
+    would leave no formation period inside the window, so the factor is undefined."""
+    px = pd.DataFrame({"A": ramp(300)})
+    # skip (4mo = 84 rows) exceeds lookback (3mo = 63 rows): undefined, not a crash.
+    s = momentum_score(px, lookback_months=3, skip_months=4)
+    assert np.isnan(s["A"])
+    # The exact boundary (skip window fills the entire lookback) is also undefined.
+    assert np.isnan(momentum_score(px, lookback_months=3, skip_months=3)["A"])
+
+
 # -------------------------------------------------------------- volatility
 
 

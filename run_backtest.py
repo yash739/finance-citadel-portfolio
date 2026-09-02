@@ -72,9 +72,13 @@ def _print_summary(label, metrics, rel):
     print("  Sharpe ratio           %7.2f" % metrics["sharpe_ratio"])
     print("  Sortino ratio          %7.2f" % metrics["sortino_ratio"])
     print("  Max drawdown           %7.2f%%" % (metrics["max_drawdown"] * 100))
-    print("  Accuracy               %7.2f%%  (%d closed round trips)"
+    print("  Accuracy               %7.2f%%  (%d closed positions)"
           % (metrics["accuracy"] * 100 if pd.notna(metrics["accuracy"]) else float("nan"),
-             ts["n_round_trips"]))
+             ts["n_closed_positions"]))
+    print("  Accuracy (per sell)    %7.2f%%  (%d closing transactions)"
+          % (metrics["accuracy_by_transaction"] * 100
+             if pd.notna(metrics["accuracy_by_transaction"]) else float("nan"),
+             ts["n_closing_transactions"]))
     print("  Gain-to-loss ratio     %7.2f" % metrics["gain_to_loss_ratio"])
     print("  Annualised turnover    %7.2fx" % ts["annualised_turnover"])
     print("  Transaction costs paid %s" % _fmt_inr(ts["total_transaction_cost_inr"]))
@@ -91,8 +95,8 @@ def _print_summary(label, metrics, rel):
     if d:
         print("  ---- honesty check: where the excess came from ----")
         print("  Excess over index      %+7.2f pp/yr" % (d["total_excess_over_index"] * 100))
-        print("    survivorship bias    %+7.2f pp/yr   <-- artifact, not alpha"
-              % (d["attributable_to_survivorship_bias"] * 100))
+        print("    universe/composition %+7.2f pp/yr   <-- size+EW+survivorship, not alpha"
+              % (d["attributable_to_universe_composition"] * 100))
         print("    factor selection     %+7.2f pp/yr   <-- the real contribution"
               % (d["attributable_to_strategy_selection"] * 100))
         if not d["strategy_beats_own_universe"]:

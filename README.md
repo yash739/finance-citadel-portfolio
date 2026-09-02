@@ -21,8 +21,11 @@ python run_backtest.py --config config.yaml
 
 # Outputs land in reports/: figures/, metrics_*.json, trades_*.csv, round_trips_*.csv
 
-# 4. Sanity-check the result: how much of it is survivorship bias vs strategy?
+# 4. Sanity-check the result: how much is the universe (size/EW/survivorship) vs strategy?
 python -m src.diagnostics
+
+# 4b. Show the parameters were chosen on a train/validate split, never on 2026 (no leakage)
+python -m src.experiments --select
 
 # 5. Reproduce the strategy-selection evidence (ladder, sweeps, per-year robustness)
 python -m src.experiments --all
@@ -58,7 +61,7 @@ src/
   metrics.py               Sharpe, MDD, annualised return, gain-to-loss, accuracy, turnover
   benchmark.py              Nifty 100 / 500 comparison series
   visualize.py              equity curve, drawdown, rolling return plots
-  diagnostics.py            survivorship-bias decomposition: how much of the result is real
+  diagnostics.py            return decomposition: index vs universe/composition vs selection
   experiments.py            strategy ladder + parameter sweeps: how the strategy was chosen
   pit_universe.py           2023 point-in-time universe test: is the edge snapshot-dependent?
   alt_strategies.py         14 alternative signal families + sector-neutral and ensemble wrappers
@@ -96,9 +99,13 @@ are in.
 - [ ] All dates, capital, and cost assumptions live in `config.yaml`, not hardcoded
 - [ ] Universe restricted to Nifty 100 / Midcap 100 / Smallcap 100, ≤10 holdings at all times
 - [ ] 0.1% transaction cost applied on every buy and sell
-- [ ] `reports/metrics.json` contains every metric required by the guidelines
+- [ ] `reports/metrics_in_sample.json` and `reports/metrics_out_of_sample.json` contain
+      every metric required by the guidelines
 - [ ] Benchmark comparison included and plotted
-- [ ] Out-of-sample run (Jan–Jun 2026) uses the exact same trained rule, no refitting
-- [ ] `pytest tests/ -q` passes (103 tests, incl. a no-look-ahead invariance check)
-- [ ] Survivorship bias quantified and disclosed, not just mentioned - see
-      `python -m src.diagnostics` and docs/strategy_notes.md
+- [ ] Out-of-sample run (Jan–Jun 2026) uses the exact same trained rule, no refitting;
+      the two data-chosen parameters were fixed on a 2021–2023 / 2024–2025 train-validate
+      split (`python -m src.experiments --select`), never on the 2026 window
+- [ ] `pytest tests/ -q` passes (124 tests, incl. a no-look-ahead invariance check)
+- [ ] Universe/composition effect (size + equal-weight + survivorship) quantified and
+      disclosed, not just mentioned - see `python -m src.diagnostics`, the point-in-time
+      survivorship test `python -m src.pit_universe`, and docs/strategy_notes.md

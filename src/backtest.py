@@ -159,6 +159,14 @@ def run_backtest(
     last_known: dict = {}
     pending_target = None        # weights decided yesterday, executed today
 
+    # A "position episode" is one open-to-flat lifecycle of a name: it begins when a
+    # name is bought from a zero holding and ends when it is sold back to zero. Every
+    # sell in between (partial trims and the final close) carries the same episode id,
+    # so downstream metrics can aggregate a position's whole-life realised P&L into a
+    # single "trade" - which is what accuracy and gain-to-loss should be measured over.
+    episode_of: dict = {}        # ticker -> id of its currently-open episode
+    next_episode = 0
+
     nav_records = []
     trade_records = []
     round_trips = []
@@ -219,6 +227,7 @@ def run_backtest(
                         {
                             "exit_date": date,
                             "ticker": ticker,
+                            "position_id": episode_of.get(ticker),
                             "shares": n_sold,
                             "avg_cost": avg_cost.get(ticker, price),
                             "exit_price": price,
@@ -232,6 +241,7 @@ def run_backtest(
                     if shares[ticker] == 0:
                         shares.pop(ticker, None)
                         avg_cost.pop(ticker, None)
+                        episode_of.pop(ticker, None)
                 else:  # BUY
                     outlay = notional + cost
                     if outlay > cash:
@@ -249,6 +259,10 @@ def run_backtest(
                     avg_cost[ticker] = (prev_basis + notional + cost) / new_shares
                     shares[ticker] = new_shares
                     cash -= outlay
+                    # Opening buy (0 -> held): start a fresh position episode.
+                    if prev_shares == 0 and new_shares > 0:
+                        episode_of[ticker] = next_episode
+                        next_episode += 1
 
                 trade_records.append(
                     {
@@ -322,6 +336,7 @@ def run_backtest(
         [
             {
                 "ticker": t,
+                "position_id": episode_of.get(t),
                 "shares": n,
                 "avg_cost": avg_cost.get(t, np.nan),
                 "last_price": last_known.get(t, np.nan),

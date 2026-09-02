@@ -12,12 +12,14 @@ import pytest
 
 from src.metrics import (
     accuracy,
+    accuracy_by_transaction,
     annualised_return,
     annualised_volatility,
     calmar_ratio,
     gain_to_loss_ratio,
     max_drawdown,
     max_drawdown_detail,
+    n_closed_positions,
     profit_factor,
     sharpe_ratio,
     total_net_pnl,
@@ -164,6 +166,63 @@ def test_metrics_on_empty_trade_table_are_nan_not_crash():
     empty = pd.DataFrame({"realised_pnl": []})
     assert np.isnan(accuracy(empty))
     assert np.isnan(gain_to_loss_ratio(empty))
+
+
+# ------------------------------------------------ position-level aggregation
+
+
+def test_accuracy_aggregates_trims_into_one_position():
+    """Two names. AAA is trimmed twice at a loss then exits at a big gain: as ONE
+    position it nets +80 (a win). BBB is a single losing exit (-30).
+
+    Per-position accuracy = 1 win / 2 positions = 0.50.
+    Per-transaction accuracy = 1 win / 4 sells = 0.25 (the trims drag it down).
+    """
+    rt = pd.DataFrame(
+        {
+            "position_id": [0, 0, 0, 1],
+            "ticker": ["AAA", "AAA", "AAA", "BBB"],
+            "realised_pnl": [-10.0, -10.0, 100.0, -30.0],
+            "closed_fully": [False, False, True, True],
+        }
+    )
+    assert accuracy(rt) == pytest.approx(0.50)
+    assert accuracy_by_transaction(rt) == pytest.approx(0.25)
+    assert n_closed_positions(rt) == 2
+
+
+def test_accuracy_excludes_positions_never_fully_closed():
+    """A position that only ever got trimmed (never returned to flat) has an unknown
+    final outcome and must not count - exactly like an open position."""
+    rt = pd.DataFrame(
+        {
+            "position_id": [0, 0, 1],
+            "realised_pnl": [50.0, 50.0, -20.0],
+            "closed_fully": [False, False, True],  # id 0 never fully closed
+        }
+    )
+    # Only position 1 is closed, and it lost money.
+    assert n_closed_positions(rt) == 1
+    assert accuracy(rt) == pytest.approx(0.0)
+
+
+def test_gain_to_loss_uses_whole_position_pnl():
+    """Position 0 nets +80, position 1 nets -30. gain/loss = 80 / 30."""
+    rt = pd.DataFrame(
+        {
+            "position_id": [0, 0, 1],
+            "realised_pnl": [-10.0, 90.0, -30.0],
+            "closed_fully": [False, True, True],
+        }
+    )
+    assert gain_to_loss_ratio(rt) == pytest.approx(80.0 / 30.0)
+
+
+def test_legacy_trade_log_without_position_id_falls_back_to_per_row():
+    """Old logs (no position_id) must still work, one row = one trade."""
+    rt = pd.DataFrame({"realised_pnl": [100.0, -50.0, 200.0, -150.0, 0.0]})
+    assert accuracy(rt) == pytest.approx(0.40)
+    assert n_closed_positions(rt) == 5
 
 
 def test_trade_stats_counts_and_costs():

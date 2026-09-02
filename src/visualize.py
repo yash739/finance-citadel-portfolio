@@ -151,7 +151,7 @@ def plot_weights_history(weights_history: pd.DataFrame, out_path: str, title=Non
 def plot_monthly_returns_heatmap(portfolio_nav: pd.Series, out_path: str, title=None):
     """Month-by-year grid of returns - the standard 'is this consistent?' figure."""
     p = pd.Series(portfolio_nav).dropna().astype(float)
-    monthly = p.resample("ME").last().pct_change().dropna() * 100.0
+    monthly = p.resample("ME").last().pct_change(fill_method=None).dropna() * 100.0
     if monthly.empty:
         print("  skipping heatmap: not enough data")
         return
